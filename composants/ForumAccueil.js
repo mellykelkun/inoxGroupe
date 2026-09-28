@@ -76,7 +76,7 @@ function ArbreForum({ discussions }) {
         <span><strong>{discussions.length}</strong> {discussions.length > 1 ? "sujets" : "sujet"}</span>
         <span><strong>{nombreReponses}</strong> {nombreReponses > 1 ? "réponses" : "réponse"}</span>
       </div>
-      <svg viewBox="0 0 680 520" role="img" aria-label={`Arbre du Forum INOX : ${discussions.length} sujets et ${nombreReponses} réponses`}>
+      <svg viewBox="35 20 610 480" role="img" aria-label={`Arbre du Forum INOX : ${discussions.length} sujets et ${nombreReponses} réponses`}>
         <defs>
           <linearGradient id="tronc-forum" x1="0" y1="1" x2="0" y2="0">
             <stop offset="0" stopColor="#0a3158" />

@@ -180,7 +180,14 @@ export default function ForumInteractif({ messagesInitiaux, configure }) {
             <div className="forumVide"><span>01</span><h2>Soyez la première personne à ouvrir la discussion.</h2><p>Posez une question, partagez une expérience ou présentez votre projet à la communauté INOX.</p></div>
           )}
 
-          <div className="forumListe">
+          {configure && discussions.length > 0 && (
+            <div className="forumFenetre__entete">
+              <strong>{discussions.length} {discussions.length > 1 ? "discussions" : "discussion"}</strong>
+              <span>Faites défiler pour explorer les échanges ↓</span>
+            </div>
+          )}
+
+          <div className="forumListe" tabIndex={discussions.length > 0 ? 0 : undefined} role={discussions.length > 0 ? "region" : undefined} aria-label={discussions.length > 0 ? "Liste défilante des discussions du Forum INOX" : undefined}>
             {discussions.map((discussion) => {
               const reponses = reponsesParFil.get(discussion.id) || [];
               return (

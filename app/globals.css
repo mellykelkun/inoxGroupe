@@ -1,9 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap');
 
 :root { --encre: #12335c; --encre-profond: #1c65b5; --bleu: #1f73d2; --bleu-vif: #3289e5; --bleu-clair: #e5f2ff; --bleu-pale: #f3f9ff; --blanc: #ffffff; --gris: #405f80; --ligne: #b8d1e9; --accent: #f6941d; --accent-texte: #f6941d; --accent-survol: #fea42a; --accent-vif: #f6941d; --defilement: 0; }
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; overflow-x: clip; }
+* { box-sizing: border-box; scrollbar-color: var(--bleu) #dcebf7; scrollbar-width: thin; }
+html { scroll-behavior: smooth; overflow-x: clip; scroll-padding-top: 92px; }
 body { margin: 0; background: var(--blanc); color: var(--encre); font-family: 'Manrope', Arial, sans-serif; overflow-x: hidden; }
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: #dcebf7; }
+::-webkit-scrollbar-thumb { border: 3px solid #dcebf7; border-radius: 999px; background: var(--bleu); }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 a { color: inherit; text-decoration: none; } button { font: inherit; }
 .conteneur { width: min(1180px, calc(100% - 64px)); margin: 0 auto; }
 .section { padding: 150px 0; } .sectionSombre { background: var(--bleu-clair); color: var(--encre); }
@@ -24,7 +28,7 @@ a { color: inherit; text-decoration: none; } button { font: inherit; }
 .hero__texte { max-width: 690px; }.hero__marque { display: flex; align-items: flex-end; gap: 17px; margin: 24px 0 10px; color: var(--bleu); font-size: clamp(82px, 9.5vw, 142px); line-height: .78; letter-spacing: -.09em; font-weight: 800; }
 .hero__marque > span { display: inline-block; transform: translateX(calc(var(--defilement) * -.025px)); will-change: transform; }.hero__marque small { margin-bottom: 2px; color: #276bb6; font: 600 clamp(13px, 1.1vw, 16px)/1 'DM Mono', monospace; letter-spacing: .18em; writing-mode: vertical-rl; }
 .hero__promesse { max-width: 610px; margin: 35px 0 20px; color: var(--encre); font-size: clamp(31px, 3.5vw, 49px); line-height: 1.03; letter-spacing: -.055em; font-weight: 650; }.hero__promesse em, h2 em { color: var(--accent); font-family: 'Playfair Display', Georgia, serif; font-weight: 500; }
-.hero__description { max-width: 540px; color: var(--gris); font-size: 17px; line-height: 1.75; }.hero__actions { display: flex; align-items: center; gap: 28px; margin-top: 34px; }.lienClair, .lienSombre { color: var(--encre); font-size: 14px; font-weight: 700; border-bottom: 1px solid currentColor; padding-bottom: 7px; }.lienClair span, .lienSombre span { display: inline-block; margin-left: 10px; transition: transform .2s; }.lienClair:hover span, .lienSombre:hover span { transform: translateX(5px); }
+.hero__description { max-width: 540px; color: var(--gris); font-size: 17px; line-height: 1.75; }.hero__actions { display: flex; align-items: center; flex-wrap: wrap; gap: 22px 28px; margin-top: 34px; }.lienClair, .lienSombre { color: var(--encre); font-size: 14px; font-weight: 700; border-bottom: 1px solid currentColor; padding-bottom: 7px; }.lienClair span, .lienSombre span { display: inline-block; margin-left: 10px; transition: transform .2s; }.lienClair:hover span, .lienSombre:hover span { transform: translateX(5px); }
 .hero__univers { justify-self: end; width: min(100%, 520px); }.universNumerique { position: relative; width: 100%; aspect-ratio: 1; border: 1px solid rgba(31,115,210,.32); border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.9), rgba(105,171,234,.13) 50%, transparent 71%); box-shadow: inset 0 0 80px rgba(31,115,210,.07), 0 22px 70px rgba(45,112,180,.1); }
 .universNumerique::before, .universNumerique::after { content: ''; position: absolute; inset: 13%; border: 1px dashed rgba(31,115,210,.32); border-radius: 50%; animation: rotationLente 35s linear infinite; }.universNumerique::after { inset: 31%; border-style: solid; animation-direction: reverse; animation-duration: 24s; }
 .universNumerique__liaisons { position: absolute; inset: 3%; width: 94%; height: 94%; }.universNumerique__liaisons path { stroke: rgba(31,115,210,.58); stroke-width: 1.2; stroke-dasharray: 5 8; animation: circulation 12s linear infinite; }

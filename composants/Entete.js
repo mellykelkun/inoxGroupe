@@ -12,6 +12,7 @@ const liensNavigation = [
   { href: "/#services", libelle: "Services" },
   { href: "/#apropos", libelle: "À propos" },
   { href: "/#equipe", libelle: "Équipe" },
+  { href: "/#forum", libelle: "Arbre" },
   { href: "/#contact", libelle: "Contact" },
 ];
 

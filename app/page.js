@@ -128,6 +128,7 @@ export default function Home() {
               </p>
               <div className="hero__actions">
                 <a className="bouton bouton--accent" href="#solutions">Découvrir nos solutions <span aria-hidden="true">↗</span></a>
+                <a className="bouton bouton--sombre" href="#forum">Explorer l’arbre INOX <span aria-hidden="true">↓</span></a>
                 <a className="lienClair" href="#contact">Échanger avec un expert <span aria-hidden="true">→</span></a>
                 <LienCinematique className="lienClair" href="/forum">Rejoindre le Forum <span aria-hidden="true">→</span></LienCinematique>
               </div>
