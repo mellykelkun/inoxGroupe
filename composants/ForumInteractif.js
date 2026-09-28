@@ -202,7 +202,7 @@ export default function ForumInteractif({ messagesInitiaux, configure }) {
                       {reponses.map((reponse) => {
                         const parent = messagesParId.get(reponse.parent_id);
                         return (
-                          <div className={`forumReponse ${reponse.author_kind === "inox" ? "forumReponse--inox" : ""}`} key={reponse.id}>
+                          <div className={`forumReponse ${reponse.author_kind === "inox" ? "forumReponse--inox" : ""}`} id={`message-${reponse.id}`} key={reponse.id}>
                             <div className="forumReponse__meta"><strong>{reponse.display_name}</strong>{reponse.author_kind === "inox" && <span className="forumBadgeInox">Réponse officielle INOX</span>}<time dateTime={reponse.created_at}>{DATE_FORUM.format(new Date(reponse.created_at))}</time></div>
                             {parent && parent.id !== discussion.id && <small>En réponse à {parent.display_name}</small>}
                             <p>{reponse.body}</p>

@@ -18,13 +18,18 @@
 .arbreForum__tronc { fill: none; stroke: url(#tronc-forum); stroke-width: 13; stroke-linecap: round; transform-box: fill-box; transform-origin: center bottom; transform: scaleY(var(--croissance-arbre)); transition: transform 1.2s cubic-bezier(.2,.75,.2,1); }
 .arbreForum__brancheFixe { stroke: rgba(54,147,213,.72); stroke-width: 5; }
 .arbreForum__discussion { opacity: 0; animation: apparitionBranche .8s var(--delai-branche) ease forwards; }
-.arbreForum__discussion path { stroke: #52a9e6; stroke-width: 4; }
+.arbreForum__discussion .arbreForum__liaisonSujet { stroke: rgba(82,169,230,.48); stroke-width: 2; }
 .arbreForum__noeud { fill: #f6941d; stroke: #ffe0ad; stroke-width: 2; filter: url(#lueur-forum); }
-.arbreForum__feuille { fill: #84d4ff; filter: url(#lueur-forum); }
-.arbreForum__canopee circle { fill: #66c7f5; opacity: 0; filter: url(#lueur-forum); animation: apparitionFeuille .65s var(--delai-feuille) ease forwards; }
-.arbreForum__canopee circle:nth-child(3n) { fill: #f6a73e; }
-.arbreForum__discussion text { fill: #f4fbff; font: 700 13px 'Manrope', sans-serif; }
-.arbreForum__discussion .arbreForum__reponses { fill: #93c8e9; font: 500 9px 'DM Mono', monospace; text-transform: uppercase; }
+.arbreForum__lienSujet, .arbreForum__lienReponse { cursor: pointer; outline: none; }
+.arbreForum__lienSujet circle, .arbreForum__lienReponse circle { transform-box: fill-box; transform-origin: center; transition: transform .2s ease, fill .2s ease, stroke .2s ease; }
+.arbreForum__lienReponse line { stroke: rgba(124,204,249,.62); stroke-width: 1.5; transition: stroke .2s ease, stroke-width .2s ease; }
+.arbreForum__lienReponse circle { fill: #75d1ff; stroke: #d8f4ff; stroke-width: 1.2; filter: url(#lueur-forum); }
+.arbreForum__infobulle { fill: #f4fbff; opacity: 0; pointer-events: none; paint-order: stroke; stroke: #082e55; stroke-linejoin: round; stroke-width: 5px; font: 700 10px 'Manrope', sans-serif; transition: opacity .18s ease; }
+.arbreForum__infobulle--visible { opacity: .78; }
+.arbreForum__lienSujet:hover circle, .arbreForum__lienSujet:focus-visible circle { fill: #ffc06e; stroke: #fff; transform: scale(1.65); }
+.arbreForum__lienReponse:hover circle, .arbreForum__lienReponse:focus-visible circle { fill: #fff; stroke: #f6941d; transform: scale(2); }
+.arbreForum__lienReponse:hover line, .arbreForum__lienReponse:focus-visible line { stroke: #f6941d; stroke-width: 2.5; }
+.arbreForum__lienSujet:hover .arbreForum__infobulle, .arbreForum__lienSujet:focus-visible .arbreForum__infobulle, .arbreForum__lienReponse:hover .arbreForum__infobulle, .arbreForum__lienReponse:focus-visible .arbreForum__infobulle { opacity: 1; }
 .arbreForum__graine circle { fill: #f6941d; filter: url(#lueur-forum); }
 .arbreForum__graine path { stroke: #55afe8; stroke-width: 4; }
 .arbreForum__graine text { fill: #d9effd; font: 600 13px 'Manrope', sans-serif; }
@@ -33,7 +38,6 @@
 .arbreForum__socle span { color: rgba(179,222,250,.55); font-size: 32px; font-weight: 800; letter-spacing: -.07em; }
 .arbreForum__socle small { color: #9fc7e0; font: 500 8px 'DM Mono', monospace; text-transform: uppercase; }
 @keyframes apparitionBranche { from { opacity: 0; transform: scale(.75); transform-origin: center; } to { opacity: 1; transform: scale(1); } }
-@keyframes apparitionFeuille { from { opacity: 0; transform: scale(0); transform-origin: center; } to { opacity: .7; transform: scale(1); } }
 
 .forumAccueil__manifeste { padding: 35px 0; border-block: 1px solid rgba(163,213,246,.25); }
 .forumAccueil__manifeste > span { color: #ffc06e; font: 600 10px 'DM Mono', monospace; letter-spacing: .08em; text-transform: uppercase; }
@@ -85,8 +89,8 @@
   .forumAccueil__coeur { margin-top: 42px; padding-bottom: 72px; }
   .arbreForum { min-height: 405px; margin-inline: -10px; }
   .arbreForum svg { min-height: 400px; }
-  .arbreForum__discussion text { font-size: 11px; }
-  .arbreForum__discussion .arbreForum__reponses { font-size: 8px; }
+  .arbreForum__infobulle { font-size: 9px; }
+  .arbreForum__infobulle--visible { opacity: .72; }
   .arbreForum__graine text { font-size: 11px; }
   .arbreForum__graine text { display: none; }
   .arbreForum__appelInitial { top: 51%; font-size: 12px; }
@@ -102,6 +106,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .arbreForum__tronc { transition: none; }
-  .arbreForum__discussion, .arbreForum__canopee circle, .forumApercu--chargement { animation: none; opacity: 1; }
+  .arbreForum__discussion, .forumApercu--chargement { animation: none; opacity: 1; }
+  .arbreForum__lienSujet circle, .arbreForum__lienReponse circle, .arbreForum__lienReponse line, .arbreForum__infobulle { transition: none; }
   .forumAccueil__commandes button { transition: none; }
 }

@@ -73,6 +73,7 @@
 .forumDiscussion__actions button, .forumReponse > button { padding: 0 0 5px; border: 0; border-bottom: 1px solid currentColor; background: transparent; color: var(--bleu); cursor: pointer; font-size: 12px; font-weight: 800; }
 .forumReponses { display: grid; gap: 1px; margin-top: 24px; border-left: 2px solid var(--bleu); background: #c8deef; }
 .forumReponse { padding: 22px 22px 22px 26px; background: #f3f8fd; }
+.forumDiscussion, .forumReponse { scroll-margin-top: 120px; }
 .forumReponse--inox { border-left: 5px solid var(--accent); background: #e5f2ff; }
 .forumReponse__meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 9px; margin-bottom: 11px; }
 .forumReponse > small { display: block; margin: -3px 0 9px; color: #68849f; font-size: 10px; }

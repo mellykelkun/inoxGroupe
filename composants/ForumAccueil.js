@@ -10,24 +10,27 @@ const LIBELLES_CATEGORIES = {
   projet: "Projet numérique",
 };
 
-const POSITIONS_BRANCHES = [
-  { x: 190, y: 322, departY: 365, controleX: 262, controleY: 350, cote: "gauche" },
-  { x: 490, y: 277, departY: 335, controleX: 420, controleY: 322, cote: "droite" },
-  { x: 165, y: 223, departY: 300, controleX: 247, controleY: 275, cote: "gauche" },
-  { x: 515, y: 175, departY: 265, controleX: 435, controleY: 235, cote: "droite" },
-  { x: 195, y: 126, departY: 230, controleX: 275, controleY: 195, cote: "gauche" },
-  { x: 485, y: 84, departY: 195, controleX: 405, controleY: 155, cote: "droite" },
-  { x: 265, y: 73, departY: 176, controleX: 300, controleY: 120, cote: "gauche" },
-  { x: 413, y: 48, departY: 151, controleX: 375, controleY: 99, cote: "droite" },
-];
+const ANGLE_DORE = Math.PI * (3 - Math.sqrt(5));
 
-const POSITIONS_CANOPÉE = [
-  [120, 245], [135, 181], [160, 113], [205, 73], [251, 42], [304, 73],
-  [350, 39], [401, 76], [453, 44], [507, 90], [548, 139], [566, 205],
-  [537, 258], [497, 311], [445, 337], [390, 304], [325, 328], [274, 303],
-  [216, 276], [175, 259], [231, 181], [289, 145], [350, 113], [416, 138],
-  [473, 207], [422, 228], [359, 205], [296, 221], [272, 101], [455, 109],
-];
+function positionSujet(index) {
+  const angle = index * ANGLE_DORE - Math.PI / 2;
+  const rayon = 54 + Math.sqrt(index + 1) * 32;
+  return {
+    angle,
+    x: Math.round(340 + Math.cos(angle) * rayon),
+    y: Math.round(Math.min(365, Math.max(48, 205 + Math.sin(angle) * rayon * .66))),
+  };
+}
+
+function positionReponse(position, index, total) {
+  const ecart = total === 1 ? 0 : (index - (total - 1) / 2) * .95;
+  const angle = position.angle + Math.PI / 2 + ecart;
+  const distance = 20 + Math.floor(index / 4) * 8;
+  return {
+    x: Math.round(position.x + Math.cos(angle) * distance),
+    y: Math.round(position.y + Math.sin(angle) * distance),
+  };
+}
 
 function raccourcir(texte, longueur = 29) {
   if (!texte || texte.length <= longueur) return texte;
@@ -54,12 +57,18 @@ function organiserMessages(messages) {
 
 function ArbreForum({ discussions }) {
   const nombreReponses = discussions.reduce((total, discussion) => total + discussion.reponses.length, 0);
-  const branches = discussions.slice(0, POSITIONS_BRANCHES.length);
   const croissance = Math.min(1, .34 + discussions.length * .1 + nombreReponses * .025);
-  const densiteCanopee = Math.min(
-    POSITIONS_CANOPÉE.length,
-    Math.max(0, discussions.length - 3) + Math.floor(nombreReponses / 3),
-  );
+  const graphe = discussions.map((discussion, index) => {
+    const position = positionSujet(index);
+    return {
+      discussion,
+      position,
+      reponses: discussion.reponses.map((reponse, reponseIndex) => ({
+        reponse,
+        position: positionReponse(position, reponseIndex, discussion.reponses.length),
+      })),
+    };
+  });
 
   return (
     <div className="arbreForum" style={{ "--croissance-arbre": croissance }}>
@@ -89,39 +98,58 @@ function ArbreForum({ discussions }) {
         <path className="arbreForum__brancheFixe arbreForum__brancheFixe--gauche" d="M338 309 C294 290 261 260 231 222" />
         <path className="arbreForum__brancheFixe arbreForum__brancheFixe--droite" d="M342 261 C386 247 418 213 447 172" />
 
-        <g className="arbreForum__canopee" aria-hidden="true">
-          {POSITIONS_CANOPÉE.slice(0, densiteCanopee).map(([x, y], index) => (
-            <circle
-              cx={x}
-              cy={y}
-              r={index % 4 === 0 ? 6 : 4}
-              key={`${x}-${y}`}
-              style={{ "--delai-feuille": `${index * 35}ms` }}
-            />
-          ))}
-        </g>
-
-        {branches.map((discussion, index) => {
-          const position = POSITIONS_BRANCHES[index];
-          const departX = position.cote === "gauche" ? 337 : 343;
-          const texteX = position.cote === "gauche" ? position.x - 15 : position.x + 15;
-          const ancrage = position.cote === "gauche" ? "end" : "start";
-          const feuilles = Math.min(5, discussion.reponses.length);
+        {graphe.map(({ discussion, position, reponses }, index) => {
+          const departY = Math.min(390, Math.max(155, position.y + 62));
+          const controleX = Math.round(340 + (position.x - 340) * .48);
+          const controleY = Math.round((departY + position.y) / 2);
+          const texteX = position.x < 340 ? position.x - 13 : position.x + 13;
+          const ancrage = position.x < 340 ? "end" : "start";
           return (
-            <g className="arbreForum__discussion" key={discussion.id} style={{ "--delai-branche": `${index * 90}ms` }}>
-              <path d={`M${departX} ${position.departY} Q${position.controleX} ${position.controleY} ${position.x} ${position.y}`} />
-              <circle className="arbreForum__noeud" cx={position.x} cy={position.y} r="7" />
-              {Array.from({ length: feuilles }).map((_, feuille) => {
-                const angle = (feuille / Math.max(1, feuilles)) * Math.PI * 2;
-                return <circle className="arbreForum__feuille" cx={position.x + Math.cos(angle) * 18} cy={position.y + Math.sin(angle) * 15} r="4" key={feuille} />;
-              })}
-              <text x={texteX} y={position.y - 10} textAnchor={ancrage}>{raccourcir(discussion.subject, 24)}</text>
-              <text className="arbreForum__reponses" x={texteX} y={position.y + 9} textAnchor={ancrage}>{discussion.reponses.length} {discussion.reponses.length > 1 ? "réponses" : "réponse"}</text>
+            <g className="arbreForum__discussion" key={discussion.id} style={{ "--delai-branche": `${Math.min(index, 12) * 55}ms` }}>
+              <path className="arbreForum__liaisonSujet" d={`M340 ${departY} Q${controleX} ${controleY} ${position.x} ${position.y}`} />
+
+              {reponses.map(({ reponse, position: positionFeuille }) => (
+                <a
+                  className="arbreForum__lienReponse"
+                  href={`/forum#message-${reponse.id}`}
+                  aria-label={`Lire la réponse de ${reponse.display_name}`}
+                  key={reponse.id}
+                >
+                  <line x1={position.x} y1={position.y} x2={positionFeuille.x} y2={positionFeuille.y} />
+                  <circle cx={positionFeuille.x} cy={positionFeuille.y} r="4" />
+                  <text
+                    className="arbreForum__infobulle"
+                    x={positionFeuille.x < 340 ? positionFeuille.x - 8 : positionFeuille.x + 8}
+                    y={positionFeuille.y - 7}
+                    textAnchor={positionFeuille.x < 340 ? "end" : "start"}
+                  >
+                    {raccourcir(`${reponse.display_name} — ${reponse.body}`, 36)}
+                  </text>
+                  <title>{`Réponse de ${reponse.display_name} : ${reponse.body}`}</title>
+                </a>
+              ))}
+
+              <a
+                className="arbreForum__lienSujet"
+                href={`/forum#discussion-${discussion.id}`}
+                aria-label={`Ouvrir le sujet : ${discussion.subject}`}
+              >
+                <circle className="arbreForum__noeud" cx={position.x} cy={position.y} r={index < 8 ? "8" : "6"} />
+                <text
+                  className={`arbreForum__infobulle ${index < 8 ? "arbreForum__infobulle--visible" : ""}`}
+                  x={texteX}
+                  y={position.y - 9}
+                  textAnchor={ancrage}
+                >
+                  {raccourcir(discussion.subject, 31)}
+                </text>
+                <title>{`${discussion.subject} — ${discussion.reponses.length} ${discussion.reponses.length > 1 ? "réponses" : "réponse"}`}</title>
+              </a>
             </g>
           );
         })}
 
-        {branches.length === 0 && (
+        {graphe.length === 0 && (
           <g className="arbreForum__graine">
             <circle cx="340" cy="351" r="9" />
             <path d="M340 351 C314 339 302 321 297 298" />
@@ -130,7 +158,7 @@ function ArbreForum({ discussions }) {
           </g>
         )}
       </svg>
-      {branches.length === 0 && <p className="arbreForum__appelInitial">Votre question fera naître la première branche.</p>}
+      {graphe.length === 0 && <p className="arbreForum__appelInitial">Votre question fera naître la première branche.</p>}
       <div className="arbreForum__socle"><span>INOX</span><small>Les échanges font grandir la connaissance.</small></div>
     </div>
   );
@@ -198,7 +226,7 @@ export default function ForumAccueil() {
         <div className="forumAccueil__manifeste">
           <span>Un savoir vivant</span>
           <strong>L’arbre révèle les sujets qui rassemblent la communauté INOX.</strong>
-          <p>Plus les visiteurs questionnent, partagent et répondent, plus sa ramure devient riche. Les noms des sujets apparaissent sur les branches ; les réponses deviennent des feuilles.</p>
+          <p>Plus les visiteurs questionnent, partagent et répondent, plus sa ramure devient riche. Touchez une bulle pour ouvrir directement son sujet ou sa réponse dans le Forum.</p>
           <Link href="/forum">Faire grandir l’arbre avec votre question <span aria-hidden="true">→</span></Link>
         </div>
       </div>
