@@ -1,14 +1,22 @@
 import LogoInox from "./LogoInox";
+import LienCinematique from "./LienCinematique";
+import CarteInstallation from "./CarteInstallation";
 
 export default function PiedDePage() {
   return (
     <footer className="piedDePage">
+      <div className="conteneur"><CarteInstallation /></div>
       <div className="conteneur piedDePage__principal">
         <div>
-          <a className="marque marque--pied" href="#accueil" aria-label="Retour à l'accueil INOX Technologies">
+          <LienCinematique className="marque marque--pied" href="/" direction="retour" aria-label="Retour à l'accueil INOX Technologies">
             <LogoInox />
-          </a>
-          <p className="piedDePage__intro">L’ingénierie numérique au service d’organisations plus performantes, plus sécurisées et plus durables.</p>
+          </LienCinematique>
+          <p className="piedDePage__intro">Des solutions informatiques fiables, sécurisées et adaptées à votre activité — de la conception au support.</p>
+          <div className="piedDePage__experiences">
+            <LienCinematique className="piedDePage__ecosysteme" href="/partenaires" variante="partenaires">Découvrir nos partenaires <span aria-hidden="true">↗</span></LienCinematique>
+            <LienCinematique className="piedDePage__ecosysteme" href="/ecosysteme">Explorer notre écosystème <span aria-hidden="true">↗</span></LienCinematique>
+            <LienCinematique className="piedDePage__ecosysteme" href="/immersion-core">Vivre Immersion Core <span aria-hidden="true">→</span></LienCinematique>
+          </div>
         </div>
         <div className="piedDePage__contact">
           <span className="eyebrow eyebrow--clair">Parlons de votre projet</span>
@@ -19,7 +27,7 @@ export default function PiedDePage() {
           <span>Cocody, Angré 9e Tranche · Route CNPS<br />Abidjan, Côte d’Ivoire</span>
         </div>
       </div>
-      <div className="conteneur piedDePage__bas"><span>© INOX Technologies</span><span>Ingénierie · Intégration · Accompagnement</span></div>
+      <div className="conteneur piedDePage__bas"><span>© INOX Technologies</span><span>Fiabilité · Sécurité · Performance</span></div>
     </footer>
   );
 }

@@ -1,8 +1,8 @@
-# INOX Technologies — prototype institutionnel
+# INOX Technologies
 
 [![Verification continue](https://github.com/mellykelkun/inoxGroupe/actions/workflows/ci.yml/badge.svg)](https://github.com/mellykelkun/inoxGroupe/actions/workflows/ci.yml)
 
-MVP indépendant du site WordPress de production d’INOX Technologies.
+Site institutionnel indépendant du site WordPress de production d’INOX Technologies.
 
 Prototype déployé : [inox-groupe.vercel.app](https://inox-groupe.vercel.app)
 
@@ -17,16 +17,15 @@ Le site est ensuite disponible sur [http://localhost:3000](http://localhost:3000
 
 ## Structure actuelle
 
-- `app/page.js` : structure et contenu de la page d’accueil.
-- `app/layout.js` : métadonnées et structure globale Next.js.
-- `app/globals.css` : identité visuelle, responsive et animations CSS.
-- `composants/Entete.js` : navigation et comportement du header.
-- `composants/FormulaireContact.js` : formulaire entreprise/particulier prêt à être relié au futur espace d’administration.
-- `composants/CarteCoteIvoire.js` : carte et repère géographique d’Angré.
-- `composants/Revelation.js` : apparition progressive au défilement.
-- `composants/PiedDePage.js` : coordonnées et footer.
+- `app/` : routes, métadonnées, manifeste, styles et police locale.
+- `app/ecosysteme/` : présentation des expertises et technologies.
+- `app/partenaires/` : références clients et partenaires technologiques.
+- `app/immersion-core/` : expérience interactive Immersion Core.
+- `composants/` : composants partagés et comportements côté client.
+- `public/` : images, logos, icônes, carte de visite et carte géographique.
+- `licenses/` : licence de la police locale Perfograma.
 
-Le projet utilise Next.js App Router, React, JavaScript et CSS classique. Aucun backend, CMS ou contenu de production n’est connecté.
+Le projet utilise Next.js App Router, React, JavaScript et CSS classique. Aucun backend ni CMS n’est connecté.
 
 ## CI/CD
 

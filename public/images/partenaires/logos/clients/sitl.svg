@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 220" role="img" aria-labelledby="title desc">
+  <title id="title">SITL Transport et Logistique</title>
+  <desc id="desc">Identité de la Société ivoirienne de Transport et de Logistiques</desc>
+  <rect x="18" y="18" width="184" height="184" rx="24" fill="#315e9e"/>
+  <path d="M48 56h124v22H48zm0 43h124v22H48zm0 43h124v22H48z" fill="#fff" opacity=".18"/>
+  <text x="110" y="140" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="70" font-style="italic" font-weight="800" text-anchor="middle">SITL</text>
+  <text x="240" y="112" fill="#274e82" font-family="Arial, Helvetica, sans-serif" font-size="44" font-style="italic" font-weight="800">TRANSPORT</text>
+  <text x="240" y="162" fill="#5d6673" font-family="Arial, Helvetica, sans-serif" font-size="35" font-style="italic" font-weight="700">&amp; LOGISTIQUE</text>
+</svg>

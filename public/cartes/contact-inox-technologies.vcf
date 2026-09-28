@@ -1,0 +1,15 @@
+BEGIN:VCARD
+VERSION:3.0
+FN:INOX Technologies
+N:Technologies;INOX;;;
+ORG:INOX Technologies
+TITLE:Solutions informatiques et cybersécurité
+TEL;TYPE=WORK,VOICE:+2250708201515
+TEL;TYPE=WORK,VOICE:+2250707950441
+EMAIL;TYPE=INTERNET,WORK:contact@inox-group.net
+EMAIL;TYPE=INTERNET,WORK:fidelebo@inox-group.net
+ADR;TYPE=WORK:;;Cocody, Angré 9e Tranche - Route CNPS;Abidjan;;;Côte d'Ivoire
+URL:https://inox-groupe.vercel.app/
+PHOTO;VALUE=URI:https://inox-groupe.vercel.app/icons/inox-app-512.png
+NOTE:INOX Technologies sécurise, connecte et modernise l'informatique des entreprises pour améliorer leur continuité, leur productivité et leur performance.
+END:VCARD

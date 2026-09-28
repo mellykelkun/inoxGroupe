@@ -70,8 +70,8 @@ export default function FormulaireContact() {
     <form className="formulaireContact" onSubmit={envoyerDemande}>
       <div className="formulaireContact__entete">
         <span className="formulaireContact__numero">DEMANDE / 01</span>
-        <h3>Présentez-nous votre besoin</h3>
-        <p>Quelques informations suffisent pour préparer un premier échange utile.</p>
+        <h3>Quel résultat recherchez-vous ?</h3>
+        <p>Décrivez votre priorité : nous préparerons un échange centré sur les solutions et les prochaines étapes.</p>
       </div>
 
       <fieldset className="choixProfil">
@@ -122,14 +122,14 @@ export default function FormulaireContact() {
             <option>Datacenter, cloud & productivité</option>
             <option>Réseaux & cybersécurité</option>
             <option>Développement & intégration</option>
-            <option>Audit & consulting</option>
+            <option>Audit & conseil</option>
             <option>Formation, assistance & support</option>
             <option>Autre besoin</option>
           </select>
         </label>
         <label className="formulaireContact__large">
           <span>Comment pouvons-nous vous aider ? *</span>
-          <textarea name="message" rows="5" required placeholder="Décrivez brièvement votre contexte, votre difficulté ou le résultat recherché." />
+          <textarea name="message" rows="5" required placeholder="Exemple : réduire les interruptions, sécuriser nos données, connecter plusieurs sites ou automatiser un processus." />
         </label>
         <label className="formulaireContact__large">
           <span>Comment préférez-vous être recontacté ?</span>
@@ -148,7 +148,7 @@ export default function FormulaireContact() {
 
       <div className="formulaireContact__action">
         <button className="bouton bouton--accent" type="submit" disabled={etatEnvoi === "envoi"}>
-          {etatEnvoi === "envoi" ? "Transmission…" : "Envoyer ma demande"}
+          {etatEnvoi === "envoi" ? "Transmission…" : "Être recontacté"}
           <span aria-hidden="true">↗</span>
         </button>
         <p className={`formulaireContact__etat formulaireContact__etat--${etatEnvoi}`} role="status" aria-live="polite">{messageEtat}</p>
