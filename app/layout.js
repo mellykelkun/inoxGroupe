@@ -12,6 +12,7 @@ const perfograma = localFont({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://inox-groupe.vercel.app"),
   applicationName: "INOX Technologies",
   title: "INOX Technologies | Solutions informatiques & cybersécurité",
   description:

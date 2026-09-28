@@ -1,4 +1,5 @@
 import Image from "next/image";
+import CarrouselLogos from "../../composants/CarrouselLogos";
 import Entete from "../../composants/Entete";
 import LienCinematique from "../../composants/LienCinematique";
 import PiedDePage from "../../composants/PiedDePage";
@@ -93,6 +94,7 @@ export default function Partenaires() {
             <span className="eyebrow">La confiance se construit par les résultats</span>
             <h1>Des partenaires solides.<br /><em>Des projets mieux maîtrisés.</em></h1>
             <p>INOX réunit les compétences et les technologies adaptées pour réduire les risques, accélérer la mise en œuvre et garantir une réponse cohérente du conseil au support.</p>
+            <LienCinematique className="bouton bouton--accent pageLienForum" href="/forum">Échanger avec la communauté <span aria-hidden="true">↗</span></LienCinematique>
             <div className="partenairesHero__reperes">
               <div><strong>360°</strong><span>du conseil aux opérations</span></div>
               <div><strong>4</strong><span>expertises complémentaires</span></div>
@@ -155,9 +157,10 @@ export default function Partenaires() {
                 <span>01</span>
                 <div><h3 id="clients-partenaires">Ils choisissent INOX</h3><p>Des entreprises et institutions qui nous confient leurs enjeux d’infrastructure, de sécurité, de digitalisation et d’accompagnement.</p></div>
               </div>
-              <div className="partenairesLogos partenairesLogos--clients">
+              <div className="partenairesLogos partenairesLogos--clients partenairesLogos--grille">
                 {clients.map((client) => <CarteLogo partenaire={client} key={client.nom} />)}
               </div>
+              <CarrouselLogos partenaires={clients} libelle="Références clients, carrousel interactif" />
             </section>
 
             <section className="partenairesAnnuaire__groupe" aria-labelledby="technologies-partenaires">
@@ -165,9 +168,10 @@ export default function Partenaires() {
                 <span>02</span>
                 <div><h3 id="technologies-partenaires">Des technologies éprouvées</h3><p>Des éditeurs, constructeurs et distributeurs reconnus, sélectionnés selon les exigences réelles de chaque projet.</p></div>
               </div>
-              <div className="partenairesLogos partenairesLogos--technologies">
+              <div className="partenairesLogos partenairesLogos--technologies partenairesLogos--grille">
                 {partenairesTechnologiques.map((partenaire) => <CarteLogo partenaire={partenaire} key={partenaire.nom} />)}
               </div>
+              <CarrouselLogos partenaires={partenairesTechnologiques} libelle="Partenaires technologiques, carrousel interactif" />
             </section>
           </div>
         </section>

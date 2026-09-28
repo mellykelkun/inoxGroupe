@@ -15,6 +15,7 @@ export default function PiedDePage() {
           <div className="piedDePage__experiences">
             <LienCinematique className="piedDePage__ecosysteme" href="/partenaires" variante="partenaires">Découvrir nos partenaires <span aria-hidden="true">↗</span></LienCinematique>
             <LienCinematique className="piedDePage__ecosysteme" href="/ecosysteme">Explorer notre écosystème <span aria-hidden="true">↗</span></LienCinematique>
+            <LienCinematique className="piedDePage__ecosysteme" href="/forum">Rejoindre le Forum INOX <span aria-hidden="true">↗</span></LienCinematique>
             <LienCinematique className="piedDePage__ecosysteme" href="/immersion-core">Vivre Immersion Core <span aria-hidden="true">→</span></LienCinematique>
           </div>
         </div>

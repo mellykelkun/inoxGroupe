@@ -8,6 +8,8 @@ import PiedDePage from "../composants/PiedDePage";
 import Revelation from "../composants/Revelation";
 import UniversNumerique from "../composants/UniversNumerique";
 import InstallationAccueil from "../composants/InstallationAccueil";
+import ForumAccueil from "../composants/ForumAccueil";
+import "./forum-accueil.css";
 
 const expertises = [
   {
@@ -127,6 +129,7 @@ export default function Home() {
               <div className="hero__actions">
                 <a className="bouton bouton--accent" href="#solutions">Découvrir nos solutions <span aria-hidden="true">↗</span></a>
                 <a className="lienClair" href="#contact">Échanger avec un expert <span aria-hidden="true">→</span></a>
+                <LienCinematique className="lienClair" href="/forum">Rejoindre le Forum <span aria-hidden="true">→</span></LienCinematique>
               </div>
             </Revelation>
             <Revelation classe="hero__univers"><UniversNumerique /></Revelation>
@@ -261,6 +264,8 @@ export default function Home() {
         </section>
 
         <BandeauTechnologies />
+
+        <ForumAccueil />
 
         <section className="section partenairesApercu" id="partenaires">
           <div className="conteneur">

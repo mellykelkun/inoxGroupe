@@ -21,11 +21,13 @@ Le site est ensuite disponible sur [http://localhost:3000](http://localhost:3000
 - `app/ecosysteme/` : présentation des expertises et technologies.
 - `app/partenaires/` : références clients et partenaires technologiques.
 - `app/immersion-core/` : expérience interactive Immersion Core.
+- `app/forum/` : forum public relié à Supabase, avec discussions et réponses.
+- `supabase/` : migrations, politiques RLS et configuration locale de la base.
 - `composants/` : composants partagés et comportements côté client.
 - `public/` : images, logos, icônes, carte de visite et carte géographique.
 - `licenses/` : licence de la police locale Perfograma.
 
-Le projet utilise Next.js App Router, React, JavaScript et CSS classique. Aucun backend ni CMS n’est connecté.
+Le projet utilise Next.js App Router, React, JavaScript et CSS classique. Le Forum INOX s’appuie sur une base Supabase accessible uniquement depuis les routes serveur.
 
 ## CI/CD
 

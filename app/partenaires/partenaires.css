@@ -169,3 +169,40 @@
   color: var(--accent-texte);
   font-weight: 700;
 }
+
+.partenairesHero__reperes div + div,
+.partenairesEngagement + .partenairesEngagement {
+  border-left-color: #000;
+}
+
+/* La conclusion reste sombre, avec un bleu nuit moins dense. */
+.partenairesFinal {
+  background: linear-gradient(135deg, #15466f, #1b5a87);
+}
+
+.partenairesHero__reperes span,
+.partenairesSchema__branche small,
+.partenaireLogo > span {
+  color: #405f80;
+}
+
+/* Carrousels tactiles réservés aux petits écrans et aux applications installées. */
+.partenairesCarrousel { display: none; }
+
+@media (max-width: 850px), (display-mode: standalone) {
+  .partenairesLogos--grille { display: none; }
+  .partenairesCarrousel { display: grid; gap: 13px; }
+  .partenairesCarrousel__commandes { display: flex; min-height: 34px; align-items: center; justify-content: space-between; gap: 16px; color: #405f80; font: 700 11px/1.4 'DM Mono', monospace; letter-spacing: .05em; text-transform: uppercase; }
+  .partenairesCarrousel__commandes button { min-height: 34px; padding: 0 12px; border: 1px solid #8fb4d0; border-radius: 999px; background: rgba(255,255,255,.72); color: #174f7c; font: 700 11px 'DM Mono', monospace; cursor: pointer; touch-action: manipulation; }
+  .partenairesCarrousel__commandes button:disabled { cursor: default; opacity: .72; }
+  .partenairesCarrousel__fenetre { width: 100%; overflow-x: auto; overflow-y: hidden; overscroll-behavior-inline: contain; scrollbar-width: none; touch-action: pan-x pan-y; mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent); }
+  .partenairesCarrousel__fenetre::-webkit-scrollbar { display: none; }
+  .partenairesCarrousel__fenetre:focus-visible { outline: 2px solid var(--bleu); outline-offset: 5px; }
+  .partenairesCarrousel__piste { display: flex; width: max-content; }
+  .partenairesCarrousel__groupe { display: flex; flex: 0 0 auto; gap: 13px; padding-right: 13px; }
+  .partenaireLogo--carrousel { width: min(68vw, 280px); min-height: 165px; flex: 0 0 auto; }
+}
+
+@media (max-width: 520px) {
+  .partenaireLogo--carrousel { width: 76vw; min-height: 155px; }
+}

@@ -109,6 +109,7 @@ export default function Entete() {
           ))}
           <LienCinematique className={`navigation__lien ${chemin === "/partenaires" ? "navigation__lien--actif" : ""}`} href="/partenaires" variante="partenaires" aria-current={chemin === "/partenaires" ? "page" : undefined} onClick={fermerMenu}>Partenaires</LienCinematique>
           <LienCinematique className={`navigation__lien navigation__lien--ecosysteme ${chemin === "/ecosysteme" ? "navigation__lien--actif" : ""}`} href="/ecosysteme" aria-current={chemin === "/ecosysteme" ? "page" : undefined} onClick={fermerMenu}>Technologies</LienCinematique>
+          <LienCinematique className={`navigation__lien ${chemin === "/forum" ? "navigation__lien--actif" : ""}`} href="/forum" aria-current={chemin === "/forum" ? "page" : undefined} onClick={fermerMenu}>Forum</LienCinematique>
           <LienCinematique className={`boutonImmersion ${chemin === "/immersion-core" ? "boutonImmersion--actif" : ""}`} href="/immersion-core" aria-current={chemin === "/immersion-core" ? "page" : undefined} onClick={fermerMenu}>
             Immersion Core
             <span className="boutonImmersion__fleche" aria-hidden="true">→</span>

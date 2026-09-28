@@ -18,6 +18,14 @@ const domaines = [
     texte: "Nous adaptons l’hébergement, le stockage et la sauvegarde à votre activité afin de limiter les interruptions, maîtriser les coûts et accompagner votre croissance.",
     technologies: ["Microsoft Azure", "AWS", "Google Cloud", "VMware", "Hyper-V", "OpenStack", "Docker", "Kubernetes"],
     services: ["Architecture hybride et multicloud", "Migration et modernisation", "Virtualisation et conteneurs", "Sauvegarde, PRA et haute disponibilité"],
+    illustration: "/images/expertises/datacenter-cloud-4k.webp",
+    illustrationAlt: "Baies serveurs dans un datacenter moderne",
+    outils: [
+      { nom: "Azure", logo: "/logos/technologies/microsoftazure.svg" },
+      { nom: "AWS", logo: "/logos/technologies/amazonwebservices.svg" },
+      { nom: "VMware", logo: "/logos/technologies/vmware.svg" },
+      { nom: "Kubernetes", logo: "/logos/technologies/kubernetes.svg" },
+    ],
     couleur: "bleu",
   },
   {
@@ -28,6 +36,14 @@ const domaines = [
     texte: "Nous automatisons les tests, les configurations et les mises en ligne pour réduire les erreurs manuelles et rendre chaque évolution plus prévisible.",
     technologies: ["GitHub Actions", "GitLab CI", "Jenkins", "Terraform", "Ansible", "Argo CD", "Nginx", "Prometheus"],
     services: ["Pipelines CI/CD", "Infrastructure as Code", "GitOps et automatisation", "Supervision et observabilité"],
+    illustration: "/images/equipe/equipe-inox-pair-programming.webp",
+    illustrationAlt: "Ingénieurs travaillant ensemble sur une chaîne de déploiement",
+    outils: [
+      { nom: "Terraform", logo: "/logos/technologies/terraform.svg" },
+      { nom: "Ansible", logo: "/logos/technologies/ansible.svg" },
+      { nom: "Docker", logo: "/logos/technologies/docker.svg" },
+      { nom: "Prometheus", logo: "/logos/technologies/prometheus.svg" },
+    ],
     couleur: "orange",
   },
   {
@@ -38,6 +54,14 @@ const domaines = [
     texte: "Nous concevons des réseaux stables et sécurisés pour que les collaborateurs accèdent aux outils, à la voix et aux données avec la qualité de service attendue.",
     technologies: ["Cisco", "Aruba", "Fortinet", "MikroTik", "Ubiquiti", "Huawei Enterprise", "WireGuard", "OpenVPN"],
     services: ["LAN, WAN et Wi-Fi entreprise", "SD-WAN et interconnexion de sites", "VPN et accès distants", "Audit de couverture et qualité de service"],
+    illustration: "/images/expertises/reseaux-cybersecurite-4k.webp",
+    illustrationAlt: "Équipements réseau et connexions sécurisées en entreprise",
+    outils: [
+      { nom: "Cisco", logo: "/logos/technologies/cisco.svg" },
+      { nom: "Fortinet", logo: "/logos/technologies/fortinet.svg" },
+      { nom: "Ubiquiti", logo: "/logos/technologies/ubiquiti.svg" },
+      { nom: "WireGuard", logo: "/logos/technologies/wireguard.svg" },
+    ],
     couleur: "cyan",
   },
   {
@@ -48,6 +72,14 @@ const domaines = [
     texte: "Nous sécurisons les identités, les équipements, le réseau, les données et les sauvegardes tout en améliorant la détection et la capacité de reprise.",
     technologies: ["Microsoft Defender", "Microsoft Sentinel", "Fortinet", "Sophos", "CrowdStrike", "Wazuh", "Veeam", "MFA & IAM"],
     services: ["Audit et durcissement", "Firewall, EDR et protection des accès", "SIEM, journalisation et supervision", "Sauvegarde immuable et reprise"],
+    illustration: "/images/immersion/immersion-core-noc.webp",
+    illustrationAlt: "Centre d’opérations supervisant la sécurité d’un système d’information",
+    outils: [
+      { nom: "Fortinet", logo: "/logos/technologies/fortinet.svg" },
+      { nom: "Microsoft", logo: "/logos/technologies/microsoft.svg" },
+      { nom: "Veeam", logo: "/images/partenaires/logos/technologies/veeam-wordmark.svg" },
+      { nom: "Kaspersky", logo: "/images/partenaires/logos/technologies/kaspersky-wordmark.svg" },
+    ],
     couleur: "rouge",
   },
   {
@@ -58,6 +90,14 @@ const domaines = [
     texte: "Nous connectons les applications, les données et les outils métiers pour automatiser les tâches, réduire les doubles saisies et améliorer la visibilité des équipes.",
     technologies: ["Microsoft 365", "Power Platform", "SharePoint", "Odoo", "Next.js", "Node.js", "PostgreSQL", "API & Webhooks"],
     services: ["Applications web et mobiles", "ERP, CRM et gestion documentaire", "Automatisation des workflows", "Intégration, API et tableaux de bord"],
+    illustration: "/images/expertises/digitalisation-metiers-4k.webp",
+    illustrationAlt: "Équipe utilisant des applications métiers connectées",
+    outils: [
+      { nom: "Microsoft", logo: "/logos/technologies/microsoft.svg" },
+      { nom: "Odoo", logo: "/logos/technologies/odoo.svg" },
+      { nom: "Next.js", logo: "/logos/technologies/nextdotjs.svg" },
+      { nom: "PostgreSQL", logo: "/logos/technologies/postgresql.svg" },
+    ],
     couleur: "violet",
   },
   {
@@ -68,6 +108,14 @@ const domaines = [
     texte: "Nous suivons les solutions, traitons les incidents et accompagnons les utilisateurs pour maintenir la qualité de service et prolonger la valeur de votre investissement.",
     technologies: ["Zabbix", "Grafana", "Prometheus", "Veeam", "GLPI", "ITIL", "Ticketing", "Support distant"],
     services: ["Monitoring et alertes", "MCO et maintien en sécurité", "Helpdesk et assistance terrain", "Formation et transfert de compétences"],
+    illustration: "/images/expertises/formation-support-4k.webp",
+    illustrationAlt: "Techniciens assurant le support et le suivi des utilisateurs",
+    outils: [
+      { nom: "Grafana", logo: "/logos/technologies/grafana.svg" },
+      { nom: "Prometheus", logo: "/logos/technologies/prometheus.svg" },
+      { nom: "Ansible", logo: "/logos/technologies/ansible.svg" },
+      { nom: "Veeam", logo: "/images/partenaires/logos/technologies/veeam-wordmark.svg" },
+    ],
     couleur: "vert",
   },
 ];
@@ -93,6 +141,7 @@ export default function Ecosysteme() {
             <span className="eyebrow">Une réponse complète à vos enjeux informatiques</span>
             <h1>Une informatique cohérente.<br /><em>Sans zone de faiblesse.</em></h1>
             <p>Infrastructure, réseaux, sécurité, logiciels et support réunis pour réduire les interruptions, protéger vos données et simplifier le travail de vos équipes.</p>
+            <LienCinematique className="bouton bouton--accent pageLienForum" href="/forum">Poser une question au Forum <span aria-hidden="true">↗</span></LienCinematique>
             <div className="ecosystemeHero__reperes">
               <div><strong>06</strong><span>domaines complémentaires</span></div>
               <div><strong>360°</strong><span>des équipements aux utilisateurs</span></div>
@@ -134,13 +183,33 @@ export default function Ecosysteme() {
                     <span className="ecosystemeDomaine__surTitre">{domaine.accroche}</span>
                     <h2>{domaine.titre}</h2>
                     <p>{domaine.texte}</p>
-                    <div className="ecosystemeDomaine__technologies" aria-label={`Technologies pour ${domaine.titre}`}>
-                      {domaine.technologies.map((technologie) => <span key={technologie}>{technologie}</span>)}
+                    <div className="ecosystemeDomaine__technologies" role="list" aria-label={`Technologies pour ${domaine.titre}`}>
+                      {domaine.technologies.map((technologie) => <span role="listitem" key={technologie}>{technologie}</span>)}
                     </div>
                   </div>
-                  <div className="ecosystemeDomaine__services">
-                    <span>Services associés</span>
-                    <ul>{domaine.services.map((service) => <li key={service}>{service}</li>)}</ul>
+                  <div className="ecosystemeDomaine__lateral">
+                    <div className="ecosystemeDomaine__illustration">
+                      <Image
+                        className="ecosystemeDomaine__image"
+                        src={domaine.illustration}
+                        alt={domaine.illustrationAlt}
+                        fill
+                        sizes="(max-width: 520px) calc(100vw - 40px), (max-width: 850px) calc(100vw - 135px), 390px"
+                      />
+                      <div className="ecosystemeDomaine__voile" aria-hidden="true" />
+                      <span className="ecosystemeDomaine__legende">Outils mobilisables</span>
+                      <div className="ecosystemeDomaine__outils" aria-hidden="true">
+                        {domaine.outils.map((outil) => (
+                          <span className="ecosystemeDomaine__outil" key={outil.nom} title={outil.nom}>
+                            <Image src={outil.logo} alt="" width={76} height={38} />
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="ecosystemeDomaine__services">
+                      <span>Services associés</span>
+                      <ul>{domaine.services.map((service) => <li key={service}>{service}</li>)}</ul>
+                    </div>
                   </div>
                 </article>
               </Revelation>

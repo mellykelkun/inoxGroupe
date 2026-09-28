@@ -54,6 +54,13 @@ export default function manifest() {
         url: "/#contact",
         icons: [{ src: "/icons/inox-app-192.png", sizes: "192x192" }],
       },
+      {
+        name: "Forum INOX",
+        short_name: "Forum",
+        description: "Échanger avec la communauté et l’équipe INOX.",
+        url: "/forum",
+        icons: [{ src: "/icons/inox-app-192.png", sizes: "192x192" }],
+      },
     ],
   };
 }

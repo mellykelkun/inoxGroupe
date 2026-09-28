@@ -742,3 +742,96 @@
 
 .icBouton--primaire:hover { background: var(--accent-survol); color: #12335c; }
 .icImpact__grille span { color: var(--accent-texte); }
+
+.icHero__reperes div + div,
+.icMission__donnees div + div,
+.icEtape__livrable,
+.icEtape__metriques div + div,
+.icImpact__grille > div + div {
+  border-left-color: #000;
+}
+
+/* Surfaces Immersion Core éclaircies sans modifier les couleurs de texte. */
+.immersionCore {
+  --ic-nuit: #113c61;
+  --ic-nuit-2: #0e3150;
+  --ic-panneau: #164b75;
+  --ic-panneau-clair: #1d5a88;
+  --ic-muted: #c4daea;
+}
+
+.entete:has(+ .immersionCore) { background: rgba(13, 48, 78, .9); }
+.icHero { background: #113957; }
+.icHero__voile {
+  background:
+    radial-gradient(circle at var(--ic-x) var(--ic-y), rgba(75, 163, 231, .2), transparent 27%),
+    linear-gradient(90deg, rgba(10, 43, 70, .95) 0%, rgba(15, 53, 84, .88) 39%, rgba(16, 57, 88, .34) 72%, rgba(10, 40, 65, .54) 100%),
+    linear-gradient(0deg, rgba(10, 42, 68, .94) 0%, transparent 48%, rgba(10, 42, 68, .28) 100%);
+}
+.icHero__signal { background: rgba(25, 76, 112, .65); }
+.icBouton--fantome { background: rgba(24, 73, 108, .55); }
+.icBouton--fantome:hover { background: rgba(33, 91, 132, .85); }
+.icHeroConsole { background: rgba(16, 59, 91, .88); }
+.icMission { background: linear-gradient(145deg, #103a5d, #185079 72%, #123f65); }
+.icMission__brief {
+  background: linear-gradient(135deg, rgba(27, 83, 122, .97), rgba(16, 55, 86, .95));
+}
+.icCarte {
+  background: linear-gradient(150deg, rgba(24, 71, 107, .97), rgba(12, 45, 72, .98));
+}
+.icCarte__coeur { background: radial-gradient(circle, #1d5d8a, #103a5d 68%); }
+.icCarte__noeud { background: #12436b; }
+.icTerrain { background: #103756; }
+.icScene { background: #17527d; }
+.icScene__voile {
+  background: linear-gradient(0deg, rgba(8, 34, 55, .9), transparent 66%), linear-gradient(90deg, rgba(14, 49, 77, .24), transparent);
+}
+.icScene > span { background: rgba(17, 61, 94, .72); }
+.icFinal { background: #103452; }
+
+/* Petits textes : clairs sur les surfaces nuit, foncés sur les surfaces pâles. */
+.icHero__reperes span,
+.icHero__defile,
+.icHeroConsole__bar,
+.icHeroConsole p,
+.icMission__choix button,
+.icMission__choix button > span,
+.icMission__donnees span,
+.icRail__titre,
+.icRail button,
+.icEtape__metriques span,
+.icCarte__barre,
+.icCarte__coeur i,
+.icCarte__noeud,
+.icCarte__lecture span,
+.icFinal__telephone span {
+  color: #c6ddec;
+}
+.icHeroConsole p b { color: #eef8ff; }
+.icMission__statut { color: #bceeff; }
+.icMission__code,
+.icEtape__ligne,
+.icEtape__livrable span {
+  color: #ffd29b;
+}
+
+.icEnteteSection--clair .icSurTitre,
+.icMetrique__barre,
+.icMetrique > small,
+.icMetrique__axe,
+.icMetrique > p,
+.icJournal time,
+.icObservatoire__note,
+.icImpact__grille p {
+  color: #405f80;
+}
+.icJournal .est-ok { color: #0d6245; }
+.icJournal .est-info { color: #1b5c8d; }
+
+@media (max-width: 850px) {
+  .entete:has(+ .immersionCore) .navigation { background: rgba(12, 42, 69, .98); }
+  .icRail { background: rgba(13, 47, 75, .96); }
+  .icHero__voile {
+    background: linear-gradient(90deg, rgba(10, 43, 70, .96), rgba(14, 51, 81, .55)), linear-gradient(0deg, rgba(10, 42, 68, .95), transparent 70%);
+  }
+}
