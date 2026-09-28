@@ -21,6 +21,8 @@
 .arbreForum__discussion path { stroke: #52a9e6; stroke-width: 4; }
 .arbreForum__noeud { fill: #f6941d; stroke: #ffe0ad; stroke-width: 2; filter: url(#lueur-forum); }
 .arbreForum__feuille { fill: #84d4ff; filter: url(#lueur-forum); }
+.arbreForum__canopee circle { fill: #66c7f5; opacity: 0; filter: url(#lueur-forum); animation: apparitionFeuille .65s var(--delai-feuille) ease forwards; }
+.arbreForum__canopee circle:nth-child(3n) { fill: #f6a73e; }
 .arbreForum__discussion text { fill: #f4fbff; font: 700 13px 'Manrope', sans-serif; }
 .arbreForum__discussion .arbreForum__reponses { fill: #93c8e9; font: 500 9px 'DM Mono', monospace; text-transform: uppercase; }
 .arbreForum__graine circle { fill: #f6941d; filter: url(#lueur-forum); }
@@ -31,6 +33,7 @@
 .arbreForum__socle span { color: rgba(179,222,250,.55); font-size: 32px; font-weight: 800; letter-spacing: -.07em; }
 .arbreForum__socle small { color: #9fc7e0; font: 500 8px 'DM Mono', monospace; text-transform: uppercase; }
 @keyframes apparitionBranche { from { opacity: 0; transform: scale(.75); transform-origin: center; } to { opacity: 1; transform: scale(1); } }
+@keyframes apparitionFeuille { from { opacity: 0; transform: scale(0); transform-origin: center; } to { opacity: .7; transform: scale(1); } }
 
 .forumAccueil__manifeste { padding: 35px 0; border-block: 1px solid rgba(163,213,246,.25); }
 .forumAccueil__manifeste > span { color: #ffc06e; font: 600 10px 'DM Mono', monospace; letter-spacing: .08em; text-transform: uppercase; }
@@ -99,6 +102,6 @@
 
 @media (prefers-reduced-motion: reduce) {
   .arbreForum__tronc { transition: none; }
-  .arbreForum__discussion, .forumApercu--chargement { animation: none; opacity: 1; }
+  .arbreForum__discussion, .arbreForum__canopee circle, .forumApercu--chargement { animation: none; opacity: 1; }
   .forumAccueil__commandes button { transition: none; }
 }

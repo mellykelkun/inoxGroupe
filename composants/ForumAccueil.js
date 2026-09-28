@@ -17,6 +17,16 @@ const POSITIONS_BRANCHES = [
   { x: 515, y: 175, departY: 265, controleX: 435, controleY: 235, cote: "droite" },
   { x: 195, y: 126, departY: 230, controleX: 275, controleY: 195, cote: "gauche" },
   { x: 485, y: 84, departY: 195, controleX: 405, controleY: 155, cote: "droite" },
+  { x: 265, y: 73, departY: 176, controleX: 300, controleY: 120, cote: "gauche" },
+  { x: 413, y: 48, departY: 151, controleX: 375, controleY: 99, cote: "droite" },
+];
+
+const POSITIONS_CANOPÉE = [
+  [120, 245], [135, 181], [160, 113], [205, 73], [251, 42], [304, 73],
+  [350, 39], [401, 76], [453, 44], [507, 90], [548, 139], [566, 205],
+  [537, 258], [497, 311], [445, 337], [390, 304], [325, 328], [274, 303],
+  [216, 276], [175, 259], [231, 181], [289, 145], [350, 113], [416, 138],
+  [473, 207], [422, 228], [359, 205], [296, 221], [272, 101], [455, 109],
 ];
 
 function raccourcir(texte, longueur = 29) {
@@ -46,6 +56,10 @@ function ArbreForum({ discussions }) {
   const nombreReponses = discussions.reduce((total, discussion) => total + discussion.reponses.length, 0);
   const branches = discussions.slice(0, POSITIONS_BRANCHES.length);
   const croissance = Math.min(1, .34 + discussions.length * .1 + nombreReponses * .025);
+  const densiteCanopee = Math.min(
+    POSITIONS_CANOPÉE.length,
+    Math.max(0, discussions.length - 3) + Math.floor(nombreReponses / 3),
+  );
 
   return (
     <div className="arbreForum" style={{ "--croissance-arbre": croissance }}>
@@ -74,6 +88,18 @@ function ArbreForum({ discussions }) {
         <path className="arbreForum__tronc" d="M340 466 C330 405 354 354 337 305 C319 255 353 213 340 158 C335 132 340 109 349 83" />
         <path className="arbreForum__brancheFixe arbreForum__brancheFixe--gauche" d="M338 309 C294 290 261 260 231 222" />
         <path className="arbreForum__brancheFixe arbreForum__brancheFixe--droite" d="M342 261 C386 247 418 213 447 172" />
+
+        <g className="arbreForum__canopee" aria-hidden="true">
+          {POSITIONS_CANOPÉE.slice(0, densiteCanopee).map(([x, y], index) => (
+            <circle
+              cx={x}
+              cy={y}
+              r={index % 4 === 0 ? 6 : 4}
+              key={`${x}-${y}`}
+              style={{ "--delai-feuille": `${index * 35}ms` }}
+            />
+          ))}
+        </g>
 
         {branches.map((discussion, index) => {
           const position = POSITIONS_BRANCHES[index];
