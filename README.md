@@ -36,7 +36,8 @@ npm run dev --workspace=@inox/site-expertises
 
 | Projet | Répertoire racine | État |
 | --- | --- | --- |
-| `inox-groupe` | `apps/site-principal` | Production existante |
-| `inox-expertises` | `apps/site-expertises` | À créer après validation |
+| `inox-groupe` | `/` actuellement, puis `apps/site-principal` lors de la bascule | Production existante inchangée |
+| `inox-expertises` | `apps/site-expertises` | Créé et relié à ce dépôt ; accès protégé avant publication |
+| `inox-groupe-monorepo-preview` | `apps/site-principal` | Projet temporaire de validation |
 
 La modification du répertoire racine du projet de production ne doit intervenir qu’après validation d’une Preview du monorepo.
