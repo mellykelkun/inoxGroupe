@@ -1,0 +1,2 @@
+-- Les données de démonstration seront ajoutées lorsqu'elles pourront être
+-- séparées sans ambiguïté des données de production.

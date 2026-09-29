@@ -14,13 +14,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  verifier:
-    name: ESLint et build Next.js
+  applications:
+    name: Applications du monorepo
     runs-on: ubuntu-latest
 
     steps:
       - name: Recuperer le depot
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Installer Node.js
         uses: actions/setup-node@v4
@@ -34,5 +36,30 @@ jobs:
       - name: Verifier le code
         run: npm run lint
 
-      - name: Construire le site
+      - name: Verifier les types
+        run: npm run typecheck
+
+      - name: Executer les tests
+        run: npm run test
+
+      - name: Construire les applications
         run: npm run build
+
+  base-de-donnees:
+    name: Migrations et politiques Supabase
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Recuperer le depot
+        uses: actions/checkout@v4
+
+      - name: Installer Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.118.0
+
+      - name: Demarrer Supabase localement
+        run: supabase start
+
+      - name: Tester la base
+        run: supabase test db

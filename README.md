@@ -1,36 +1,42 @@
-# INOX Technologies
+# Plateforme INOX Groupe
 
-[![Verification continue](https://github.com/mellykelkun/inoxGroupe/actions/workflows/ci.yml/badge.svg)](https://github.com/mellykelkun/inoxGroupe/actions/workflows/ci.yml)
+Monorepo officiel des applications web d’INOX Groupe.
 
-Site institutionnel indépendant du site WordPress de production d’INOX Technologies.
+## Applications
 
-Prototype déployé : [inox-groupe.vercel.app](https://inox-groupe.vercel.app)
+- `apps/site-principal` : site institutionnel actuellement déployé sur Vercel.
+- `apps/site-expertises` : second site éditorial et SEO, pas encore en production.
+- Le site d’administration est volontairement différé et ne fait pas partie de cette étape.
 
-## Démarrer le projet
+## Infrastructure
+
+- npm workspaces centralise les dépendances dans un seul `package-lock.json`.
+- Turborepo orchestre les vérifications et les builds indépendants.
+- `supabase/` contient l’unique historique de migrations de la base partagée.
+- Chaque application sera reliée à un projet Vercel distinct avec son propre répertoire racine.
+
+## Commandes
 
 ```bash
-npm install
-npm run dev
+npm ci
+npm run lint
+npm run typecheck
+npm run test
+npm run build
 ```
 
-Le site est ensuite disponible sur [http://localhost:3000](http://localhost:3000).
+Pour travailler sur une seule application :
 
-## Structure actuelle
+```bash
+npm run dev --workspace=@inox/site-principal
+npm run dev --workspace=@inox/site-expertises
+```
 
-- `app/` : routes, métadonnées, manifeste, styles et police locale.
-- `app/ecosysteme/` : présentation des expertises et technologies.
-- `app/partenaires/` : références clients et partenaires technologiques.
-- `app/immersion-core/` : expérience interactive Immersion Core.
-- `app/forum/` : forum public relié à Supabase, avec discussions et réponses.
-- `supabase/` : migrations, politiques RLS et configuration locale de la base.
-- `composants/` : composants partagés et comportements côté client.
-- `public/` : images, logos, icônes, carte de visite et carte géographique.
-- `licenses/` : licence de la police locale Perfograma.
+## Déploiements Vercel
 
-Le projet utilise Next.js App Router, React, JavaScript et CSS classique. Le Forum INOX s’appuie sur une base Supabase accessible uniquement depuis les routes serveur.
+| Projet | Répertoire racine | État |
+| --- | --- | --- |
+| `inox-groupe` | `apps/site-principal` | Production existante |
+| `inox-expertises` | `apps/site-expertises` | À créer après validation |
 
-## CI/CD
-
-- GitHub Actions exécute `npm ci`, ESLint et le build Next.js sur les push et pull requests vers `main`.
-- Vercel est connecté au dépôt GitHub : les branches peuvent produire des aperçus et `main` alimente la production.
-- Le formulaire utilise actuellement la messagerie du visiteur. Il enverra du JSON au backend lorsque `NEXT_PUBLIC_ENDPOINT_CONTACT` sera configuré.
+La modification du répertoire racine du projet de production ne doit intervenir qu’après validation d’une Preview du monorepo.
