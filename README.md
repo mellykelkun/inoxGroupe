@@ -36,8 +36,8 @@ npm run dev --workspace=@inox/inoxgroupe-v2
 
 | Projet | Répertoire racine | État |
 | --- | --- | --- |
-| `inox-groupe` | `/` actuellement, puis `apps/inoxgroupe` lors de la bascule | Production existante inchangée |
+| `inox-groupe` | `apps/inoxgroupe` | Production active |
 | `inox-expertises` | `apps/inoxgroupe-v2` | Créé et relié à ce dépôt ; accès protégé avant publication |
 | `inox-groupe-monorepo-preview` | `apps/inoxgroupe` | Projet temporaire de validation |
 
-La modification du répertoire racine du projet de production ne doit intervenir qu’après validation d’une Preview du monorepo.
+La production principale a été basculée sur le monorepo le 29 septembre 2026 après validation d’un déploiement isolé.
