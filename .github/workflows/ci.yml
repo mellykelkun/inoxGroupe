@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   applications:
-    name: Applications du monorepo
+    name: Applications INOX
     runs-on: ubuntu-latest
 
     steps:

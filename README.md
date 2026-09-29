@@ -1,6 +1,6 @@
 # Plateforme INOX Groupe
 
-Monorepo officiel des applications web d’INOX Groupe.
+Dépôt central des applications web d’INOX Groupe.
 
 ## Applications
 
@@ -38,6 +38,5 @@ npm run dev --workspace=@inox/inoxgroupe-v2
 | --- | --- | --- |
 | `inox-groupe` | `apps/inoxgroupe` | Production active |
 | `inox-expertises` | `apps/inoxgroupe-v2` | Créé et relié à ce dépôt ; accès protégé avant publication |
-| `inox-groupe-monorepo-preview` | `apps/inoxgroupe` | Projet temporaire de validation |
 
-La production principale a été basculée sur le monorepo le 29 septembre 2026 après validation d’un déploiement isolé.
+Le site principal reste déployé par son projet Vercel historique `inox-groupe`, sur son URL publique inchangée.

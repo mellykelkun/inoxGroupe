@@ -1,6 +1,6 @@
 # État de la sauvegarde Supabase
 
-La sauvegarde distante n’a pas été exécutée automatiquement pendant la conversion du monorepo.
+La sauvegarde distante n’a pas été exécutée automatiquement pendant la centralisation du dépôt.
 
 Les variables récupérées depuis Vercel sont présentes localement sous la forme `[SENSITIVE]`, le projet n’est pas lié à Supabase CLI et aucun jeton Supabase n’est disponible dans cette session. Aucune tentative d’écriture distante n’a donc été effectuée.
 
