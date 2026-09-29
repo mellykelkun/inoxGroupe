@@ -33,7 +33,7 @@ Les alias préfixés ci-dessous restent acceptés temporairement par le code du 
 
 ## Procédure de transition
 
-1. Ajouter les noms cibles dans les environnements Preview et Production de `site-principal`.
+1. Ajouter les noms cibles dans les environnements Preview et Production de `inoxgroupe`.
 2. Déployer et vérifier le forum avec les noms cibles.
 3. Retirer les fallbacks préfixés du code dans une modification séparée.
 4. Révoquer uniquement les anciennes variables devenues inutiles.
