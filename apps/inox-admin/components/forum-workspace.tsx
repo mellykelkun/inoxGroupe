@@ -62,6 +62,14 @@ function formatDate(value: string) {
 
 function buildThreads(messages: ForumApiMessage[]) {
   const roots = messages.filter((message) => message.parent_id === null);
+  const repliesByThread = new Map<number, ForumApiMessage[]>();
+  for (const message of messages) {
+    if (message.parent_id === null || message.thread_id === null) continue;
+    const replies = repliesByThread.get(message.thread_id) ?? [];
+    replies.push(message);
+    repliesByThread.set(message.thread_id, replies);
+  }
+
   return roots.map<ForumThread>((message) => ({
     id: message.id,
     title: message.subject ?? "Sujet sans titre",
@@ -72,8 +80,7 @@ function buildThreads(messages: ForumApiMessage[]) {
     date: formatDate(message.created_at),
     official: message.author_kind === "inox",
     status: message.status === "published" ? "Publié" : "À revoir",
-    replies: messages
-      .filter((reply) => reply.thread_id === message.id)
+    replies: (repliesByThread.get(message.id) ?? [])
       .map((reply) => ({
         id: reply.id,
         parentId: reply.parent_id ?? message.id,

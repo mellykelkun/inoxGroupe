@@ -17,19 +17,28 @@ export async function GET() {
   const auth = await authenticateAdmin();
   if (!auth.ok) return denied(auth.reason);
 
-  const { data, error } = await createAdminClient()
-    .from("contact_requests")
-    .select("id,source,profile_type,organization,job_title,full_name,email,phone,location,need_area,project_stage,desired_timeline,preferred_contact,preferred_time,message,consented_at,status,created_at,updated_at")
-    .order("created_at", { ascending: false })
-    .limit(250);
+  const admin = createAdminClient();
+  const pageSize = 500;
+  const contacts = [];
 
-  if (error) {
-    console.error("Lecture des demandes impossible", error);
-    return NextResponse.json({ error: "contacts_unavailable" }, { status: 500 });
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await admin
+      .from("contact_requests")
+      .select("id,source,profile_type,organization,job_title,full_name,email,phone,location,need_area,project_stage,desired_timeline,preferred_contact,preferred_time,message,consented_at,status,created_at,updated_at")
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false })
+      .range(from, from + pageSize - 1);
+
+    if (error) {
+      console.error("Lecture des demandes impossible", error);
+      return NextResponse.json({ error: "contacts_unavailable" }, { status: 500 });
+    }
+    contacts.push(...(data ?? []));
+    if (!data || data.length < pageSize) break;
   }
 
   return NextResponse.json(
-    { contacts: data ?? [] },
+    { contacts },
     { headers: { "Cache-Control": "private, no-store, max-age=0" } },
   );
 }

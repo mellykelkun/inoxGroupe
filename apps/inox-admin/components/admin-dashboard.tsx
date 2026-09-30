@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ContactWorkspaceLive from "./contact-workspace";
 import ForumWorkspace from "./forum-workspace";
 import TeamAccessWorkspace from "./team-access-workspace";
@@ -74,128 +74,24 @@ const sectionMeta: Record<SectionId, { eyebrow: string; title: string; descripti
   },
 };
 
-const contactRequests = [
-  {
-    id: "REQ-2026-0018",
-    initials: "AD",
-    profileType: "Entreprise",
-    name: "Awa Diarra",
-    company: "Nova Distribution",
-    jobTitle: "Responsable des systèmes d’information",
-    email: "awa.diarra@nova-distribution.ci",
-    phone: "+225 07 48 22 16 90",
-    location: "Abidjan, Côte d’Ivoire",
-    need: "Réseaux & cybersécurité",
-    stage: "Cadrage en cours",
-    timeline: "Sous 1 mois",
-    channel: "Téléphone",
-    availability: "Du lundi au vendredi, entre 09 h et 12 h",
-    time: "Il y a 18 min",
-    receivedAt: "29 septembre 2026 à 15:11",
-    status: "Nouveau",
-    tone: "orange",
-    source: "Site principal INOX Technologies",
-    consentedAt: "29 septembre 2026 à 15:11",
-    message: "Nous ouvrons deux nouveaux points de vente et souhaitons relier les sites, sécuriser les accès distants et mettre en place une supervision centralisée. Nous avons besoin d’un diagnostic puis d’une proposition de déploiement.",
-  },
-  {
-    id: "REQ-2026-0017",
-    initials: "YM",
-    profileType: "Entreprise",
-    name: "Yao Mensah",
-    company: "Groupe Baobab",
-    jobTitle: "Directeur des opérations",
-    email: "yao.mensah@groupe-baobab.com",
-    phone: "+225 05 76 34 10 28",
-    location: "Bouaké, Côte d’Ivoire",
-    need: "Datacenter, cloud & productivité",
-    stage: "Recherche de prestataire",
-    timeline: "Dans 1 à 3 mois",
-    channel: "E-mail",
-    availability: "Après 14 h",
-    time: "Il y a 1 h",
-    receivedAt: "29 septembre 2026 à 14:26",
-    status: "À qualifier",
-    tone: "blue",
-    source: "Site principal INOX Technologies",
-    consentedAt: "29 septembre 2026 à 14:26",
-    message: "Nous voulons consolider nos fichiers et nos outils de collaboration. L’équipe a besoin d’un accompagnement pour choisir une architecture cloud adaptée et planifier la migration sans interrompre l’activité.",
-  },
-  {
-    id: "REQ-2026-0016",
-    initials: "SK",
-    profileType: "Particulier",
-    name: "Salimata Koné",
-    company: "Projet personnel",
-    jobTitle: "Non applicable",
-    email: "salimata.kone@example.com",
-    phone: "+225 01 42 58 73 09",
-    location: "Yamoussoukro, Côte d’Ivoire",
-    need: "Développement & intégration",
-    stage: "Idée ou besoin à clarifier",
-    timeline: "À définir ensemble",
-    channel: "E-mail",
-    availability: "En semaine, après 17 h",
-    time: "Hier, 16:42",
-    receivedAt: "28 septembre 2026 à 16:42",
-    status: "En cours",
-    tone: "cyan",
-    source: "Site principal INOX Technologies",
-    consentedAt: "28 septembre 2026 à 16:42",
-    message: "Je souhaite cadrer une application de suivi pour une petite activité. J’ai besoin de comprendre les premières étapes, les fonctions essentielles et la manière de lancer une première version.",
-  },
-];
-
-const forumItems = [
-  {
-    category: "Projet numérique",
-    title: "DevOps — système de monitoring",
-    author: "Kevin L.",
-    excerpt: "J’ai un projet de système qui permettra de monitorer…",
-    replies: 1,
-    status: "À revoir",
-  },
-  {
-    category: "Conseil & expertise",
-    title: "Cloud en Afrique de l’Ouest",
-    author: "Communauté Korhogo",
-    excerpt: "Comment garantir disponibilité et maîtrise des coûts ?",
-    replies: 2,
-    status: "Publié",
-  },
-  {
-    category: "Support technique",
-    title: "Plan de reprise après rançongiciel",
-    author: "Community London",
-    excerpt: "Quelles sauvegardes et quels rôles prévoir avant un incident ?",
-    replies: 2,
-    status: "Publié",
-  },
-];
-
-const journalArticles = [
-  {
-    title: "Cloud hybride en Afrique de l’Ouest : les bons arbitrages",
-    topic: "Infrastructure",
-    status: "Brouillon",
-    date: "Mis à jour aujourd’hui",
-    progress: 72,
-  },
-  {
-    title: "Cybersécurité des PME : les protections essentielles",
-    topic: "Sécurité",
-    status: "À relire",
-    date: "Publication prévue le 4 oct.",
-    progress: 91,
-  },
-  {
-    title: "Digitaliser sans complexifier les opérations",
-    topic: "Transformation",
-    status: "Idée",
-    date: "Proposé par l’équipe conseil",
-    progress: 24,
-  },
-];
+type OverviewStats = {
+  contacts: {
+    total: number;
+    new: number;
+    inProgress: number;
+    source: "inox-groupe";
+  };
+  forum: {
+    topics: number;
+    replies: number;
+    blockedEmails: number;
+    source: "inox-groupe";
+  };
+  journal: {
+    source: "inoxgroupe-v2";
+    connection: "pending";
+  };
+};
 
 function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
   const common = {
@@ -246,149 +142,6 @@ function BrandMark() {
 
 function Pill({ children, tone = "neutral" }: { children: React.ReactNode; tone?: string }) {
   return <span className={`pill pill--${tone}`}>{children}</span>;
-}
-
-type ContactRequest = (typeof contactRequests)[number];
-
-function ContactList({
-  compact = false,
-  selectedId,
-  onSelect,
-}: {
-  compact?: boolean;
-  selectedId?: string;
-  onSelect?: (contact: ContactRequest) => void;
-}) {
-  return (
-    <div className="contact-list">
-      {contactRequests.map((contact) => (
-        <article className={`contact-row ${selectedId === contact.id ? "is-selected" : ""}`} key={contact.id}>
-          <div className={`avatar avatar--${contact.tone}`}>{contact.initials}</div>
-          <div className="contact-main">
-            <strong>{contact.name}</strong>
-            <span>{contact.profileType} · {contact.company} · {contact.need}</span>
-          </div>
-          {!compact && <span className="contact-channel">{contact.channel}</span>}
-          <div className="contact-meta">
-            <Pill tone={contact.status === "Nouveau" ? "orange" : contact.status === "En cours" ? "cyan" : "blue"}>{contact.status}</Pill>
-            <small>{contact.time}</small>
-          </div>
-          <button className="icon-button icon-button--ghost" type="button" aria-label={`Ouvrir la demande de ${contact.name}`} onClick={() => onSelect?.(contact)}>
-            <Icon name="arrow" />
-          </button>
-        </article>
-      ))}
-    </div>
-  );
-}
-
-function DetailField({ label, children }: { label: string; children: React.ReactNode }) {
-  return <div className="detail-field"><span>{label}</span><strong>{children}</strong></div>;
-}
-
-function ContactDetail({ contact }: { contact: ContactRequest }) {
-  return (
-    <article className="request-detail">
-      <div className="request-detail__head">
-        <div>
-          <span className="card-label">{contact.id} · {contact.profileType}</span>
-          <h2>{contact.name}</h2>
-          <p>{contact.company}{contact.jobTitle !== "Non applicable" ? ` · ${contact.jobTitle}` : ""}</p>
-        </div>
-        <Pill tone={contact.status === "Nouveau" ? "orange" : contact.status === "En cours" ? "cyan" : "blue"}>{contact.status}</Pill>
-      </div>
-
-      <div className="contact-priority">
-        <Icon name={contact.channel === "Téléphone" ? "clock" : "mail"} />
-        <div><span>Canal de recontact choisi</span><strong>{contact.channel}</strong><small>{contact.availability}</small></div>
-      </div>
-
-      <div className="detail-actions">
-        <a href={`mailto:${contact.email}`}><Icon name="mail" size={16} /> {contact.email}</a>
-        <a href={`tel:${contact.phone.replace(/\s/g, "")}`}><Icon name="arrow" size={16} /> {contact.phone}</a>
-      </div>
-
-      <div className="detail-grid">
-        <DetailField label="Localisation">{contact.location}</DetailField>
-        <DetailField label="Domaine du besoin">{contact.need}</DetailField>
-        <DetailField label="Avancement">{contact.stage}</DetailField>
-        <DetailField label="Échéance souhaitée">{contact.timeline}</DetailField>
-        <DetailField label="Reçue le">{contact.receivedAt}</DetailField>
-        <DetailField label="Source">{contact.source}</DetailField>
-      </div>
-
-      <div className="request-message">
-        <span>Besoin exprimé</span>
-        <p>{contact.message}</p>
-      </div>
-
-      <div className="consent-proof">
-        <Icon name="check" size={17} />
-        <span>Consentement enregistré le {contact.consentedAt}, uniquement pour répondre à cette demande.</span>
-      </div>
-    </article>
-  );
-}
-
-function ContactWorkspace() {
-  const [selectedContact, setSelectedContact] = useState<ContactRequest>(contactRequests[0]);
-
-  return (
-    <div className="contact-workspace">
-      <section className="panel request-queue">
-        <div className="panel-heading">
-          <div><span className="card-label">Boîte de réception</span><h2>3 demandes à suivre</h2></div>
-          <Pill tone="orange">3 à traiter</Pill>
-        </div>
-        <ContactList selectedId={selectedContact.id} onSelect={setSelectedContact} />
-      </section>
-      <ContactDetail contact={selectedContact} />
-    </div>
-  );
-}
-
-function ForumList({ compact = false, onOpen }: { compact?: boolean; onOpen?: () => void }) {
-  return (
-    <div className="forum-list">
-      {forumItems.slice(0, compact ? 2 : undefined).map((item) => (
-        <article className="forum-row" key={item.title}>
-          <div className="forum-copy">
-            <div className="row-kicker"><span>{item.category}</span><i />{item.author}</div>
-            <h3>{item.title}</h3>
-            <p>{item.excerpt}</p>
-          </div>
-          <div className="forum-stats">
-            <strong>{item.replies}</strong>
-            <span>{item.replies > 1 ? "réponses" : "réponse"}</span>
-          </div>
-          <Pill tone={item.status === "À revoir" ? "orange" : "green"}>{item.status}</Pill>
-          <button className="icon-button icon-button--ghost" type="button" aria-label={`Ouvrir ${item.title}`} onClick={onOpen}><Icon name="arrow" /></button>
-        </article>
-      ))}
-    </div>
-  );
-}
-
-function JournalList() {
-  return (
-    <div className="journal-list">
-      {journalArticles.map((article, index) => (
-        <article className="journal-row" key={article.title}>
-          <span className="journal-number">0{index + 1}</span>
-          <div className="journal-copy">
-            <div className="row-kicker"><span>{article.topic}</span><i />{article.status}</div>
-            <h3>{article.title}</h3>
-            <small>{article.date}</small>
-          </div>
-          <div className="progress" aria-label={`Avancement ${article.progress}%`}>
-            <span style={{ width: `${article.progress}%` }} />
-          </div>
-          <strong className="progress-value">{article.progress}%</strong>
-          <button className="icon-button icon-button--ghost" type="button" aria-label={`Modifier ${article.title}`}><Icon name="arrow" /></button>
-        </article>
-      ))}
-    </div>
-  );
 }
 
 function JournalWorkspace() {
@@ -456,29 +209,39 @@ function PresenceCards({ detailed = false }: { detailed?: boolean }) {
   );
 }
 
-function Overview({ onNavigate }: { onNavigate: (section: SectionId) => void }) {
+function Overview({
+  onNavigate,
+  stats,
+  loading,
+}: {
+  onNavigate: (section: SectionId) => void;
+  stats: OverviewStats | null;
+  loading: boolean;
+}) {
+  const value = (number: number | undefined) => loading ? "…" : number === undefined ? "—" : String(number);
+
   return (
     <>
       <section className="metric-grid" aria-label="Indicateurs clés">
         <article className="metric-card metric-card--primary">
           <div className="metric-icon"><Icon name="inbox" /></div>
           <span>Demandes de recontact</span>
-          <strong>Suivi</strong>
-          <small>Données reçues depuis le formulaire du site principal</small>
+          <strong>{value(stats?.contacts.total)}</strong>
+          <small>{value(stats?.contacts.new)} nouvelle{stats?.contacts.new === 1 ? "" : "s"} · {value(stats?.contacts.inProgress)} en cours · site principal</small>
           <button type="button" onClick={() => onNavigate("contacts")}>Ouvrir les demandes <Icon name="arrow" size={16} /></button>
         </article>
         <article className="metric-card">
           <div className="metric-icon metric-icon--blue"><Icon name="forum" /></div>
           <span>Forum INOX</span>
-          <strong>Modération</strong>
-          <small>Sujets, réponses, blocages et publications officielles</small>
+          <strong>{value(stats?.forum.topics)} sujet{stats?.forum.topics === 1 ? "" : "s"}</strong>
+          <small>{value(stats?.forum.replies)} réponse{stats?.forum.replies === 1 ? "" : "s"} · {value(stats?.forum.blockedEmails)} adresse{stats?.forum.blockedEmails === 1 ? "" : "s"} bloquée{stats?.forum.blockedEmails === 1 ? "" : "s"}</small>
           <button type="button" onClick={() => onNavigate("forum")}>Modérer le forum <Icon name="arrow" size={16} /></button>
         </article>
         <article className="metric-card">
           <div className="metric-icon metric-icon--cyan"><Icon name="clock" /></div>
           <span>Journal INOX</span>
           <strong>Préparation</strong>
-          <small>La publication vers le site Expertises reste désactivée</small>
+          <small>Branchement réservé au site Expertises · aucune donnée du site principal</small>
           <button type="button" onClick={() => onNavigate("journal")}>Préparer le Journal <Icon name="arrow" size={16} /></button>
         </article>
         <article className="metric-card">
@@ -540,6 +303,8 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
   const [activeSection, setActiveSection] = useState<SectionId>("overview");
   const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [overviewStats, setOverviewStats] = useState<OverviewStats | null>(null);
+  const [overviewLoading, setOverviewLoading] = useState(true);
   const meta = sectionMeta[activeSection];
   const today = new Intl.DateTimeFormat("fr-FR", {
     day: "2-digit",
@@ -550,6 +315,30 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
 
   const activeLabel = navigation.find((item) => item.id === activeSection)?.label.toLowerCase();
   const searchHint = activeSection === "overview" ? "Rechercher dans INOX Admin" : `Rechercher dans ${activeLabel}`;
+
+  useEffect(() => {
+    const controller = new AbortController();
+    let active = true;
+    fetch("/api/admin/overview", { cache: "no-store", signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("overview_unavailable");
+        return response.json() as Promise<OverviewStats>;
+      })
+      .then((stats) => {
+        if (active) setOverviewStats(stats);
+      })
+      .catch((error) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        if (active) setOverviewStats(null);
+      })
+      .finally(() => {
+        if (active) setOverviewLoading(false);
+      });
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, []);
 
   function navigate(section: SectionId) {
     setActiveSection(section);
@@ -568,7 +357,13 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
 
         <div className="workspace-label"><span>Espace</span><strong>INOX Technologies</strong></div>
         <nav className="side-nav" aria-label="Navigation de l’administration">
-          {navigation.map((item) => (
+          {navigation.map((item) => {
+            const count = item.id === "contacts"
+              ? overviewStats?.contacts.new
+              : item.id === "forum"
+                ? overviewStats?.forum.topics
+                : undefined;
+            return (
             <button
               type="button"
               className={activeSection === item.id ? "is-active" : ""}
@@ -578,9 +373,10 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
             >
               <Icon name={item.icon} />
               <span>{item.label}</span>
-              {item.count ? <b>{item.count}</b> : null}
+              {typeof count === "number" ? <b>{count}</b> : null}
             </button>
-          ))}
+            );
+          })}
         </nav>
 
         <div className="sidebar-foot">
@@ -624,7 +420,9 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
             </div>
           ) : null}
 
-          {activeSection === "overview" ? <Overview onNavigate={navigate} /> : <SectionContent section={activeSection} currentMember={currentMember} />}
+          {activeSection === "overview"
+            ? <Overview onNavigate={navigate} stats={overviewStats} loading={overviewLoading} />
+            : <SectionContent section={activeSection} currentMember={currentMember} />}
         </div>
       </main>
     </div>

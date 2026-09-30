@@ -25,40 +25,59 @@ export async function GET() {
   if (!auth.ok) return denied(auth.reason);
 
   const admin = createAdminClient();
-  const [{ data: messages, error }, { data: blocked, error: blockedError }] = await Promise.all([
-    admin
+  const pageSize = 500;
+  const messages = [];
+  const blocked = [];
+
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await admin
       .from("forum_messages")
       .select("id,parent_id,thread_id,contact_id,subject,category,body,display_name,author_kind,status,created_at")
       .order("created_at", { ascending: true })
-      .limit(500),
-    admin.from("forum_blocked_emails").select("email_normalized").limit(500),
-  ]);
-
-  if (error || blockedError) {
-    console.error("Lecture de la modération impossible", error || blockedError);
-    return NextResponse.json({ error: "forum_unavailable" }, { status: 500 });
+      .order("id", { ascending: true })
+      .range(from, from + pageSize - 1);
+    if (error) {
+      console.error("Lecture de la modération impossible", error);
+      return NextResponse.json({ error: "forum_unavailable" }, { status: 500 });
+    }
+    messages.push(...(data ?? []));
+    if (!data || data.length < pageSize) break;
   }
 
-  const contactIds = [...new Set((messages ?? [])
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await admin
+      .from("forum_blocked_emails")
+      .select("email_normalized")
+      .order("id", { ascending: true })
+      .range(from, from + pageSize - 1);
+    if (error) {
+      console.error("Lecture de la liste de blocage impossible", error);
+      return NextResponse.json({ error: "forum_unavailable" }, { status: 500 });
+    }
+    blocked.push(...(data ?? []));
+    if (!data || data.length < pageSize) break;
+  }
+
+  const contactIds = [...new Set(messages
     .map((message) => message.contact_id)
     .filter((id): id is number => typeof id === "number"))];
   const contactsById = new Map<number, string>();
-  if (contactIds.length) {
+  for (let from = 0; from < contactIds.length; from += pageSize) {
     const { data: contacts, error: contactsError } = await admin
       .from("forum_contacts")
       .select("id,email")
-      .in("id", contactIds);
+      .in("id", contactIds.slice(from, from + pageSize));
     if (contactsError) return NextResponse.json({ error: "forum_contacts_unavailable" }, { status: 500 });
     for (const contact of contacts ?? []) contactsById.set(contact.id, contact.email);
   }
 
   return NextResponse.json(
     {
-      messages: (messages ?? []).map((message) => ({
+      messages: messages.map((message) => ({
         ...message,
         email: message.contact_id ? contactsById.get(message.contact_id) ?? "" : "forum@inox-group.net",
       })),
-      blockedEmails: (blocked ?? []).map((item) => item.email_normalized),
+      blockedEmails: blocked.map((item) => item.email_normalized),
       canModerate: canModerateForum(auth.identity.role),
     },
     { headers: { "Cache-Control": "private, no-store, max-age=0" } },

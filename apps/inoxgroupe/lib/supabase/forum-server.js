@@ -45,17 +45,27 @@ function obtenirClientForum() {
 }
 
 export async function lireMessagesForum() {
-  const { data, error } = await obtenirClientForum()
-    .from("forum_messages")
-    .select(
-      "id,parent_id,thread_id,subject,category,body,display_name,author_kind,created_at,updated_at",
-    )
-    .eq("status", "published")
-    .order("created_at", { ascending: false })
-    .limit(250);
+  const client = obtenirClientForum();
+  const taillePage = 500;
+  const messages = [];
 
-  if (error) throw error;
-  return data ?? [];
+  for (let debut = 0; ; debut += taillePage) {
+    const { data, error } = await client
+      .from("forum_messages")
+      .select(
+        "id,parent_id,thread_id,subject,category,body,display_name,author_kind,created_at,updated_at",
+      )
+      .eq("status", "published")
+      .order("created_at", { ascending: false })
+      .order("id", { ascending: false })
+      .range(debut, debut + taillePage - 1);
+
+    if (error) throw error;
+    messages.push(...(data ?? []));
+    if (!data || data.length < taillePage) break;
+  }
+
+  return messages;
 }
 
 export async function publierMessageForum(message, empreinte) {
