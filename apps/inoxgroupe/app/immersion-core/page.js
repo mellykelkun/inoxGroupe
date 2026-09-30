@@ -4,8 +4,8 @@ import PiedDePage from "../../composants/PiedDePage";
 import "./immersion-core.css";
 
 export const metadata = {
-  title: "Immersion Core | Découvrez la méthode INOX Technologies",
-  description: "Découvrez comment INOX transforme un besoin en solution fiable : conception, applications, données, réseaux, cybersécurité, cloud et supervision.",
+  title: "Immersion Core | La méthode INOX Technologies",
+  description: "Une méthode structurée pour transformer un besoin en solution fiable, de la conception à la supervision des applications, données, réseaux et services cloud.",
 };
 
 export default function PageImmersionCore() {

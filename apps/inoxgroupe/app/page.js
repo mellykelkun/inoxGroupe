@@ -135,7 +135,7 @@ export default function Home() {
             </Revelation>
             <Revelation classe="hero__univers"><UniversNumerique /></Revelation>
           </div>
-          <div className="hero__bas conteneur"><span>Défiler pour découvrir</span><span className="hero__fleche" aria-hidden="true">↓</span></div>
+          <div className="hero__bas conteneur"><span>Des solutions conçues autour de vos priorités</span><span className="hero__fleche" aria-hidden="true">↓</span></div>
         </section>
 
         <section className="section section--intro" id="apropos">
@@ -181,7 +181,7 @@ export default function Home() {
               <Revelation classe="equipe__photo equipe__photo--principale">
                 <Image
                   src="/images/equipe/equipe-inox-collaboration.webp"
-                  alt="Équipe africaine de spécialistes du numérique collaborant autour d’un projet"
+                  alt="Illustration de spécialistes du numérique collaborant autour d’un projet"
                   fill
                   sizes="(max-width: 850px) 100vw, 72vw"
                 />
@@ -190,13 +190,13 @@ export default function Home() {
               <Revelation classe="equipe__photo equipe__photo--secondaire">
                 <Image
                   src="/images/equipe/equipe-inox-pair-programming.webp"
-                  alt="Deux développeurs africains travaillant ensemble sur une application"
+                  alt="Illustration de deux développeurs travaillant ensemble sur une application"
                   fill
                   sizes="(max-width: 520px) 76vw, (max-width: 850px) 42vw, 28vw"
                 />
                 <span className="equipe__numero" aria-hidden="true">01 — 02</span>
               </Revelation>
-              <p className="equipe__legende">Visuels d’illustration · L’expertise se construit ensemble.</p>
+              <p className="equipe__legende">Une collaboration fondée sur l’écoute, la maîtrise technique et la transmission.</p>
             </div>
           </div>
         </section>

@@ -249,7 +249,7 @@ export default function ImmersionCore() {
         <div className="conteneur icHero__contenu">
           <div className="icHero__signal">SYSTEM ONLINE · ABIDJAN / 5.3600° N</div>
           <h1><span>IMMERSION</span><em>CORE</em></h1>
-          <p className="icHero__promesse">Découvrez comment INOX transforme un besoin en solution opérationnelle — puis tout ce qui la maintient <strong>rapide, disponible et protégée.</strong></p>
+          <p className="icHero__promesse">Transformez un besoin en solution opérationnelle, puis maintenez-la <strong>rapide, disponible et protégée.</strong></p>
           <div className="icHero__actions">
             <a className="icBouton icBouton--primaire" href="#choisir-mission">Initialiser l’expérience <span aria-hidden="true">↓</span></a>
             <LienCinematique className="icBouton icBouton--fantome" href="/#contact" direction="retour">Parler de votre projet <span aria-hidden="true">↗</span></LienCinematique>
@@ -275,7 +275,7 @@ export default function ImmersionCore() {
         <div className="conteneur">
           <header className="icEnteteSection">
             <div><span className="icSurTitre">01 / Partir du besoin</span><h2>Votre objectif guide<br />tout le <em>Core.</em></h2></div>
-            <p>Choisissez un scénario et découvrez comment chaque décision technique s’aligne sur le résultat recherché par l’entreprise.</p>
+            <p>Chaque scénario relie les décisions techniques au résultat recherché par l’entreprise.</p>
           </header>
 
           <div className="icMission__grille">
@@ -306,7 +306,7 @@ export default function ImmersionCore() {
         <div className="conteneur icParcours__intro">
           <span className="icSurTitre">02 / Relier toutes les expertises</span>
           <h2>Huit disciplines.<br /><em>Un seul résultat.</em></h2>
-          <p>Explorez chaque étape, du cadrage au suivi quotidien, et voyez comment elles se renforcent pour éviter les failles et les solutions isolées.</p>
+          <p>Du cadrage au suivi quotidien, chaque étape renforce la suivante pour éviter les failles et les solutions isolées.</p>
         </div>
 
         <div className="conteneur icParcours__grille">

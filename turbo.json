@@ -6,11 +6,18 @@
       "outputs": [".next/**", "!.next/cache/**"],
       "env": [
         "SUPABASE_URL",
+        "SUPABASE_PUBLISHABLE_KEY",
+        "SUPABASE_ANON_KEY",
         "SUPABASE_SECRET_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
         "FORUM_HASH_SECRET",
+        "CONTACT_HASH_SECRET",
+        "NEXT_PUBLIC_ADMIN_URL",
         "inoxstorage_SUPABASE_URL",
+        "inoxstorage_SUPABASE_PUBLISHABLE_KEY",
+        "inoxstorage_SUPABASE_ANON_KEY",
         "inoxstorage_SUPABASE_SECRET_KEY",
-        "NEXT_PUBLIC_ENDPOINT_CONTACT"
+        "inoxstorage_SUPABASE_SERVICE_ROLE_KEY"
       ]
     },
     "lint": {

@@ -8,8 +8,8 @@ export default function InstallationAccueil() {
       <div className="accueilInstallation__trame" aria-hidden="true" />
       <div className="conteneur accueilInstallation__cadre">
         <div className="accueilInstallation__texte">
-          <span className="eyebrow">L’expérience INOX, sans détour</span>
-          <h2 id="titre-installation-accueil">Toute notre expertise.<br /><em>Une touche suffit.</em></h2>
+          <span className="eyebrow">Vos ressources INOX toujours accessibles</span>
+          <h2 id="titre-installation-accueil">Retrouvez les bons services.<br /><em>Sans perdre de temps.</em></h2>
           <p>Installez INOX sur votre écran d’accueil et retrouvez instantanément nos expertises, nos partenaires et les bons contacts pour faire avancer vos projets.</p>
           <div className="accueilInstallation__benefices" aria-label="Avantages de l’application INOX">
             <span>Accès immédiat</span>
@@ -32,7 +32,7 @@ export default function InstallationAccueil() {
             <small>Votre accès direct</small>
           </div>
           <span className="accueilInstallation__badge accueilInstallation__badge--expertises">Expertises <b>04</b></span>
-          <span className="accueilInstallation__badge accueilInstallation__badge--reseau">Réseau <b>29</b></span>
+          <span className="accueilInstallation__badge accueilInstallation__badge--reseau">Réseau <b>PARTENAIRES</b></span>
           <span className="accueilInstallation__badge accueilInstallation__badge--contact">Contact <b>DIRECT</b></span>
         </div>
       </div>

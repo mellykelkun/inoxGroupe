@@ -225,8 +225,8 @@ export default function ForumAccueil() {
         <ArbreForum discussions={discussions} />
         <div className="forumAccueil__manifeste">
           <span>Un savoir vivant</span>
-          <strong>L’arbre révèle les sujets qui rassemblent la communauté INOX.</strong>
-          <p>Plus les visiteurs questionnent, partagent et répondent, plus sa ramure devient riche. Touchez une bulle pour ouvrir directement son sujet ou sa réponse dans le Forum.</p>
+          <strong>Les questions partagées deviennent des repères utiles pour toute la communauté.</strong>
+          <p>Posez votre question, confrontez les expériences et retrouvez les réponses qui peuvent accélérer votre propre projet.</p>
           <Link href="/forum">Faire grandir l’arbre avec votre question <span aria-hidden="true">→</span></Link>
         </div>
       </div>

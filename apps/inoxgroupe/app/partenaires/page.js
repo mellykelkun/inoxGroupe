@@ -8,7 +8,7 @@ import "./partenaires.css";
 
 export const metadata = {
   title: "Références & partenaires technologiques | INOX Technologies",
-  description: "Découvrez les organisations qui font confiance à INOX et les partenaires technologiques mobilisés pour sécuriser et accélérer chaque projet.",
+  description: "Des relations de confiance et des technologies reconnues pour sécuriser les projets, accélérer leur mise en œuvre et soutenir leur évolution.",
 };
 
 const engagements = [

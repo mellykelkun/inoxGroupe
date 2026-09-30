@@ -2,9 +2,6 @@
 
 import { useState } from "react";
 
-const adresseReception = "contact@inox-group.net";
-const endpointContact = process.env.NEXT_PUBLIC_ENDPOINT_CONTACT;
-
 export default function FormulaireContact() {
   const [typeProfil, setTypeProfil] = useState("entreprise");
   const [etatEnvoi, setEtatEnvoi] = useState("repos");
@@ -21,53 +18,35 @@ export default function FormulaireContact() {
       typeProfil,
       ...champs,
       consentement: champs.consentement === "accepte",
-      dateCreation: new Date().toISOString(),
-      source: "site-inox-technologies",
+      website: champs.website,
     };
 
-    if (endpointContact) {
-      try {
-        const reponse = await fetch(endpointContact, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(demande),
-        });
+    try {
+      const reponse = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(demande),
+      });
+      const resultat = await reponse.json().catch(() => ({}));
 
-        if (!reponse.ok) throw new Error("La demande n’a pas pu être transmise.");
+      if (!reponse.ok) throw new Error(resultat.error || "La demande n’a pas pu être transmise.");
 
-        formulaire.reset();
-        setTypeProfil("entreprise");
-        setEtatEnvoi("succes");
-        setMessageEtat("Merci. Votre demande a bien été transmise à l’équipe INOX.");
-        return;
-      } catch {
-        setEtatEnvoi("erreur");
-        setMessageEtat("L’envoi est momentanément indisponible. Vous pouvez nous écrire directement à contact@inox-group.net.");
-        return;
-      }
+      formulaire.reset();
+      setTypeProfil("entreprise");
+      setEtatEnvoi("succes");
+      setMessageEtat(`Votre demande ${resultat.reference} a bien été transmise. L’équipe INOX vous recontactera par le canal choisi.`);
+    } catch (erreur) {
+      setEtatEnvoi("erreur");
+      setMessageEtat(erreur instanceof Error ? erreur.message : "L’envoi est momentanément indisponible. Réessayez dans quelques minutes.");
     }
-
-    const sujet = encodeURIComponent(`Demande ${typeProfil} — ${champs.domaineBesoin}`);
-    const corps = encodeURIComponent([
-      `Profil : ${typeProfil}`,
-      champs.organisation ? `Organisation : ${champs.organisation}` : null,
-      champs.fonction ? `Fonction : ${champs.fonction}` : null,
-      `Nom : ${champs.nomComplet}`,
-      `Email : ${champs.email}`,
-      `Téléphone : ${champs.telephone}`,
-      `Besoin : ${champs.domaineBesoin}`,
-      `Contact préféré : ${champs.modeContact}`,
-      "",
-      champs.message,
-    ].filter(Boolean).join("\n"));
-
-    setEtatEnvoi("succes");
-    setMessageEtat("Votre messagerie va s’ouvrir avec les informations déjà préparées.");
-    window.location.href = `mailto:${adresseReception}?subject=${sujet}&body=${corps}`;
   }
 
   return (
     <form className="formulaireContact" onSubmit={envoyerDemande}>
+      <label aria-hidden="true" style={{ position: "absolute", left: "-10000px" }}>
+        Site web
+        <input name="website" type="text" tabIndex="-1" autoComplete="off" />
+      </label>
       <div className="formulaireContact__entete">
         <span className="formulaireContact__numero">DEMANDE / 01</span>
         <h3>Quel résultat recherchez-vous ?</h3>
@@ -116,6 +95,10 @@ export default function FormulaireContact() {
           <input name="telephone" type="tel" autoComplete="tel" required placeholder="+225 00 00 00 00 00" />
         </label>
         <label>
+          <span>Ville et pays *</span>
+          <input name="localisation" type="text" autoComplete="address-level2" required placeholder="Ex. Abidjan, Côte d’Ivoire" />
+        </label>
+        <label>
           <span>Domaine du besoin *</span>
           <select name="domaineBesoin" defaultValue="" required>
             <option value="" disabled>Sélectionner un domaine</option>
@@ -125,6 +108,28 @@ export default function FormulaireContact() {
             <option>Audit & conseil</option>
             <option>Formation, assistance & support</option>
             <option>Autre besoin</option>
+          </select>
+        </label>
+        <label>
+          <span>Avancement du projet *</span>
+          <select name="avancementProjet" defaultValue="" required>
+            <option value="" disabled>Sélectionner une étape</option>
+            <option value="idee">Idée ou besoin à clarifier</option>
+            <option value="cadrage">Cadrage en cours</option>
+            <option value="prestataire">Recherche de prestataire</option>
+            <option value="deploiement">Projet déjà lancé</option>
+            <option value="incident">Problème ou incident à résoudre</option>
+          </select>
+        </label>
+        <label>
+          <span>Échéance souhaitée *</span>
+          <select name="echeanceSouhaitee" defaultValue="" required>
+            <option value="" disabled>Sélectionner une échéance</option>
+            <option value="urgent">Dès que possible</option>
+            <option value="1-mois">Sous 1 mois</option>
+            <option value="1-3-mois">Dans 1 à 3 mois</option>
+            <option value="3-mois-plus">Dans plus de 3 mois</option>
+            <option value="a-definir">À définir ensemble</option>
           </select>
         </label>
         <label className="formulaireContact__large">
@@ -138,6 +143,10 @@ export default function FormulaireContact() {
             <option value="telephone">Par téléphone</option>
             <option value="indifferent">Email ou téléphone</option>
           </select>
+        </label>
+        <label className="formulaireContact__large">
+          <span>Créneau de recontact souhaité</span>
+          <input name="creneauContact" type="text" placeholder="Ex. du lundi au vendredi, entre 9 h et 12 h" />
         </label>
       </div>
 

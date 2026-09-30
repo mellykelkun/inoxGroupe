@@ -115,6 +115,9 @@ export async function POST(request) {
     if (detail.includes("RATE_LIMIT")) {
       return reponse({ error: "Trop de messages envoyés. Réessayez dans quelques minutes." }, 429);
     }
+    if (detail.includes("EMAIL_BLOCKED")) {
+      return reponse({ error: "Cette adresse ne peut plus publier sur le Forum INOX." }, 403);
+    }
     if (detail.includes("PARENT_NOT_FOUND")) {
       return reponse({ error: "Cette discussion n’est plus disponible." }, 404);
     }

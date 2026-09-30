@@ -222,7 +222,7 @@ export default function Home() {
       <section className="team section-pad" id="equipe">
         <div className="page-shell team-grid">
           <div className="team-image" data-reveal="image">
-            <Image src="/images/team.webp" alt="Équipe d’experts INOX Technologies travaillant en centre de supervision" fill sizes="(max-width: 900px) 100vw, 56vw" />
+            <Image src="/images/team.webp" alt="Illustration d’experts travaillant dans un centre de supervision" fill sizes="(max-width: 900px) 100vw, 56vw" />
             <div className="team-image-label"><span>Une équipe locale</span><strong>Des expertises complémentaires</strong></div>
           </div>
           <div className="team-copy">
