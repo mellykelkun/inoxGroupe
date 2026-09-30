@@ -45,6 +45,7 @@ export default function MfaEnrollment({
       const { data, error: enrollError } = await supabase.auth.mfa.enroll({
         factorType: "totp",
         friendlyName: "INOX Admin",
+        issuer: "INOX Technologies",
       });
       if (enrollError) throw enrollError;
       setEnrollment({
