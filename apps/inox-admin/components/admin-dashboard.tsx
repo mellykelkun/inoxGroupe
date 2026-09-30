@@ -317,6 +317,8 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
   const searchHint = activeSection === "overview" ? "Rechercher dans INOX Admin" : `Rechercher dans ${activeLabel}`;
 
   useEffect(() => {
+    if (activeSection !== "overview") return;
+
     const controller = new AbortController();
     let active = true;
     fetch("/api/admin/overview", { cache: "no-store", signal: controller.signal })
@@ -338,9 +340,10 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
       active = false;
       controller.abort();
     };
-  }, []);
+  }, [activeSection]);
 
   function navigate(section: SectionId) {
+    if (section === "overview" && activeSection !== "overview") setOverviewLoading(true);
     setActiveSection(section);
     setMenuOpen(false);
     setQuery("");
