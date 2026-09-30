@@ -7,7 +7,13 @@ import { createClient } from "@/lib/supabase/client";
 
 type Enrollment = { factorId: string; qrCode: string; secret: string };
 
-export default function MfaEnrollment({ email }: { email: string }) {
+export default function MfaEnrollment({
+  email,
+  passwordReady = false,
+}: {
+  email: string;
+  passwordReady?: boolean;
+}) {
   const router = useRouter();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -19,11 +25,11 @@ export default function MfaEnrollment({ email }: { email: string }) {
   async function prepare(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-    if (password.length < 12) {
+    if (!passwordReady && password.length < 12) {
       setError("Choisissez un mot de passe d’au moins 12 caractères.");
       return;
     }
-    if (password !== confirmPassword) {
+    if (!passwordReady && password !== confirmPassword) {
       setError("Les deux mots de passe ne correspondent pas.");
       return;
     }
@@ -31,8 +37,10 @@ export default function MfaEnrollment({ email }: { email: string }) {
     setPending(true);
     try {
       const supabase = await createClient();
-      const { error: passwordError } = await supabase.auth.updateUser({ password });
-      if (passwordError) throw passwordError;
+      if (!passwordReady) {
+        const { error: passwordError } = await supabase.auth.updateUser({ password });
+        if (passwordError) throw passwordError;
+      }
 
       const { data, error: enrollError } = await supabase.auth.mfa.enroll({
         factorType: "totp",
@@ -83,14 +91,16 @@ export default function MfaEnrollment({ email }: { email: string }) {
     return (
       <form className="auth-form" onSubmit={prepare}>
         <div className="auth-account"><span>Compte invité</span><strong>{email}</strong></div>
-        <label>
-          Créer votre mot de passe
-          <input type="password" autoComplete="new-password" minLength={12} required value={password} onChange={(event) => setPassword(event.target.value)} />
-        </label>
-        <label>
-          Confirmer le mot de passe
-          <input type="password" autoComplete="new-password" minLength={12} required value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} />
-        </label>
+        {!passwordReady ? <>
+          <label>
+            Créer votre mot de passe
+            <input type="password" autoComplete="new-password" minLength={12} required value={password} onChange={(event) => setPassword(event.target.value)} />
+          </label>
+          <label>
+            Confirmer le mot de passe
+            <input type="password" autoComplete="new-password" minLength={12} required value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} />
+          </label>
+        </> : <p className="auth-help">Votre mot de passe est actif. Créez maintenant votre QR personnel pour protéger chaque connexion.</p>}
         {error ? <p className="auth-error" role="alert">{error}</p> : null}
         <button className="auth-submit" type="submit" disabled={pending}>
           {pending ? "Préparation…" : "Créer mon QR personnel"}

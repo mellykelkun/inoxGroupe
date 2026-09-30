@@ -24,7 +24,10 @@ export default async function ActivationPage() {
       title="Sécurisez votre compte INOX"
       description="Le QR ci-dessous sera créé uniquement dans votre session. L’administrateur qui vous a invité ne pourra ni le voir ni reproduire vos codes."
     >
-      <MfaEnrollment email={userData.user.email ?? "Compte INOX"} />
+      <MfaEnrollment
+        email={userData.user.email ?? "Compte INOX"}
+        passwordReady={userData.user.app_metadata.inox_password_initialized === true}
+      />
     </AuthShell>
   );
 }
