@@ -14,7 +14,7 @@ export default function AuthShell({
   return (
     <main className="auth-page">
       <section className="auth-card">
-        <div className="auth-brand" aria-label="INOX Administration">
+        <div className="auth-brand">
           <span>INOX</span>
           <small>ADMINISTRATION</small>
         </div>
@@ -32,4 +32,3 @@ export default function AuthShell({
     </main>
   );
 }
-

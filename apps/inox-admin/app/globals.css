@@ -1865,7 +1865,7 @@ a {
 }
 
 .auth-brand small {
-  color: var(--orange);
+  color: #a85400;
   font: 650 11px var(--font-mono), monospace;
   letter-spacing: 0.1em;
 }
@@ -1939,7 +1939,7 @@ a {
   border: 0;
   border-radius: 10px;
   color: #fff;
-  background: linear-gradient(135deg, var(--blue), #0d5599);
+  background: var(--blue);
   box-shadow: 0 12px 26px rgba(23, 109, 194, 0.2);
   font-weight: 750;
   cursor: pointer;
