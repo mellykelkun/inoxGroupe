@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap');
 
-:root { --encre: #12335c; --encre-profond: #1c65b5; --bleu: #1f73d2; --bleu-vif: #3289e5; --bleu-clair: #e5f2ff; --bleu-pale: #f3f9ff; --blanc: #ffffff; --gris: #405f80; --ligne: #b8d1e9; --accent: #f6941d; --accent-texte: #f6941d; --accent-survol: #fea42a; --accent-vif: #f6941d; --defilement: 0; }
+:root { --encre: #12335c; --encre-profond: #1c65b5; --bleu: #1f73d2; --bleu-vif: #3289e5; --bleu-clair: #e5f2ff; --bleu-pale: #f3f9ff; --blanc: #ffffff; --gris: #405f80; --ligne: #b8d1e9; --accent: #f6941d; --accent-texte: #f6941d; --accent-survol: #f6941d; --accent-vif: #f6941d; --defilement: 0; }
 * { box-sizing: border-box; scrollbar-color: var(--bleu) #dcebf7; scrollbar-width: thin; }
 html { scroll-behavior: smooth; overflow-x: clip; scroll-padding-top: 92px; }
 body { margin: 0; background: var(--blanc); color: var(--encre); font-family: 'Manrope', Arial, sans-serif; overflow-x: hidden; }
@@ -1129,8 +1129,9 @@ body {
   --surface-nuit: #123f69;
   --surface-nuit-claire: #1b5a8b;
   --surface-nuit-carte: #2b74aa;
-  --accent-texte: #a34d00;
 }
+
+.ecosystemeDomaine--orange { --domaine-texte: var(--accent); }
 
 .section--equipe {
   background: linear-gradient(145deg, #123d68 0%, #1b5688 58%, #154a78 100%);
@@ -1229,6 +1230,93 @@ body {
   color: #4e6f8d;
 }
 
+/* Assistant INOX : accueil conversationnel et demande de recontact. */
+.inox-assistant { position: fixed; z-index: 90; right: max(20px, env(safe-area-inset-right)); bottom: max(20px, env(safe-area-inset-bottom)); color: #f4f8fb; font-family: inherit; }
+.inox-assistant__bubble { display: inline-flex; min-height: 52px; padding: 0 18px; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,.18); border-radius: 999px; background: #082f55; box-shadow: 0 16px 36px rgba(0,28,54,.3); color: #fff; cursor: pointer; font-weight: 800; transition: transform .2s ease, background .2s ease; }
+.inox-assistant__bubble span { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 50%; background: #f6951d; color: #fff; font-size: 16px; }
+.inox-assistant__bubble:hover { background: #0d477b; transform: translateY(-2px); }
+.inox-assistant__window { display: grid; grid-template-rows: auto auto minmax(180px, 1fr) auto auto auto; width: min(420px, calc(100vw - 32px)); max-height: min(720px, calc(100vh - 100px)); margin-bottom: 12px; overflow: hidden; border: 1px solid rgba(109,177,221,.42); border-radius: 18px; background: #062642; box-shadow: 0 28px 80px rgba(0,18,37,.38); }
+.inox-assistant__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; padding: 19px 20px 15px; background: linear-gradient(135deg, #0a4778, #082c50); }
+.inox-assistant__head span { display: block; margin-bottom: 7px; color: #78cfff; font: 600 9px 'DM Mono', monospace; letter-spacing: .12em; }
+.inox-assistant__head strong { display: block; font-size: 20px; line-height: 1.1; letter-spacing: -.03em; }
+.inox-assistant__head button, .inox-assistant__form-head button { width: 28px; height: 28px; border: 0; border-radius: 50%; background: rgba(255,255,255,.08); color: #dceefa; cursor: pointer; font-size: 21px; line-height: 1; }
+.inox-assistant__network { display: flex; padding: 8px 20px; align-items: center; gap: 8px; background: #0b3557; color: #a6dbbd; font: 600 10px 'DM Mono', monospace; }
+.inox-assistant__network i { width: 7px; height: 7px; border-radius: 50%; background: #48d18e; }
+.inox-assistant__network.is-offline { color: #ffd299; }
+.inox-assistant__network.is-offline i { background: #f6951d; }
+.inox-assistant__messages { min-height: 180px; padding: 16px; overflow-y: auto; background: #f4f8fb; color: #18334b; }
+.inox-assistant__messages:focus-visible { outline: 3px solid #f6951d; outline-offset: -3px; }
+.inox-assistant.is-intake .inox-assistant__window { grid-template-rows: auto auto minmax(65px, 110px) minmax(0, 1fr) auto; }
+.inox-assistant.is-intake .inox-assistant__messages { min-height: 65px; }
+.inox-assistant__message { max-width: 88%; margin: 0 0 10px; padding: 11px 13px; border-radius: 13px 13px 13px 3px; background: #fff; box-shadow: 0 4px 15px rgba(13,55,83,.08); font-size: 13px; line-height: 1.52; white-space: pre-wrap; }
+.inox-assistant__page-link { color: #075c8c; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.inox-assistant__page-link:hover, .inox-assistant__page-link:focus-visible { color: #073c5c; }
+.inox-assistant__message--user { margin-left: auto; border-radius: 13px 13px 3px 13px; background: #0c527f; color: #fff; }
+.inox-assistant__choices { padding: 12px 16px; background: #e9f2f8; color: #315b78; font-size: 12px; }
+.inox-assistant__choices p { margin: 0 0 9px; }
+.inox-assistant__choices div, .inox-assistant__composer > div { display: flex; gap: 8px; }
+.inox-assistant__choices button, .inox-assistant__composer button, .inox-assistant__dynamic button { min-height: 34px; padding: 0 12px; border: 1px solid #8bb5ce; border-radius: 7px; background: #fff; color: #0b4b75; cursor: pointer; font-size: 11px; font-weight: 800; }
+.inox-assistant__choices button:hover, .inox-assistant__composer button:hover { border-color: #f6951d; }
+.inox-assistant__composer { padding: 12px 16px; background: #e9f2f8; }
+.inox-assistant__composer textarea, .inox-assistant__form input, .inox-assistant__form select, .inox-assistant__form textarea, .inox-assistant__dynamic input { width: 100%; border: 1px solid #bed2df; border-radius: 7px; background: #fff; color: #163a55; font: inherit; font-size: 12px; outline: none; }
+.inox-assistant__composer textarea { display: block; min-height: 51px; padding: 10px; resize: vertical; }
+.inox-assistant__composer textarea:focus, .inox-assistant__form input:focus, .inox-assistant__form select:focus, .inox-assistant__form textarea:focus, .inox-assistant__dynamic input:focus { border-color: #3d9bd0; box-shadow: 0 0 0 3px rgba(61,155,208,.13); }
+.inox-assistant__composer > div { justify-content: space-between; margin-top: 8px; }
+.inox-assistant__composer > div button:last-child, .inox-assistant__submit { border-color: transparent; background: #f6951d; color: #fff; }
+.inox-assistant__composer button:disabled, .inox-assistant__dynamic button:disabled, .inox-assistant__submit:disabled { opacity: .55; cursor: not-allowed; }
+.inox-assistant__error { margin: 7px 0 0; color: #a43a2c; font-size: 11px; line-height: 1.4; }
+.inox-assistant__error button { min-height: 28px; margin-left: 5px; padding: 0 8px; }
+.inox-assistant__form { max-height: 390px; padding: 13px 16px 16px; overflow-y: auto; background: #e9f2f8; color: #315b78; }
+.inox-assistant__form-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; color: #123e5c; font-size: 13px; }
+.inox-assistant__form-head button { flex: 0 0 auto; background: #d1e2ee; color: #123e5c; }
+.inox-assistant__profile-switch { display: flex; gap: 6px; margin-bottom: 10px; }
+.inox-assistant__profile-switch button { flex: 1; min-height: 34px; border: 1px solid #8bb5ce; border-radius: 7px; background: #fff; color: #0b4b75; cursor: pointer; font-weight: 700; }
+.inox-assistant__profile-switch button[aria-pressed="true"] { border-color: #0c527f; background: #0c527f; color: #fff; }
+.inox-assistant__extra-review { margin: 12px 0 0; padding: 9px 11px 12px; border: 1px solid #9fc3d8; border-radius: 8px; }
+.inox-assistant__extra-review legend { padding: 0 5px; font-size: 11px; font-weight: 800; }
+.inox-assistant__form label { display: grid; gap: 4px; margin-top: 8px; font-size: 10px; font-weight: 800; }
+.inox-assistant__form input, .inox-assistant__form select, .inox-assistant__form textarea { min-height: 34px; padding: 7px 9px; }
+.inox-assistant__form textarea { resize: vertical; }
+.inox-assistant__form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.inox-assistant__check { display: flex !important; align-items: flex-start; gap: 8px !important; font-weight: 500 !important; line-height: 1.4; }
+.inox-assistant__check input { width: 15px; min-height: 15px; margin-top: 1px; }
+.inox-assistant__submit { width: 100%; min-height: 38px; margin-top: 12px; border-radius: 7px; cursor: pointer; font-size: 11px; font-weight: 800; }
+.inox-assistant__dynamic { margin: 12px 0; padding: 11px; border: 1px solid #b5d2e3; border-left: 3px solid #f6951d; border-radius: 8px; background: #fff; font-size: 11px; }
+.inox-assistant__dynamic strong, .inox-assistant__dynamic span { display: block; }
+.inox-assistant__dynamic span { margin: 4px 0 8px; color: #56758b; line-height: 1.4; }
+.inox-assistant__dynamic div { display: flex; gap: 6px; }
+.inox-assistant__dynamic small { display: block; margin-top: 6px; color: #56758b; }
+.inox-assistant__dynamic input { min-height: 31px; padding: 6px 8px; }
+.inox-assistant__dynamic button { flex: 0 0 auto; }
+.inox-assistant__foot { display: flex; min-height: 35px; padding: 8px 16px; align-items: center; justify-content: space-between; gap: 12px; background: #062642; color: #c5d9e8; font-size: 9px; }
+.inox-assistant__foot > div { display: flex; flex: 0 0 auto; gap: 10px; }
+.inox-assistant__foot button { padding: 0; border: 0; background: transparent; color: var(--accent); cursor: pointer; font-size: 10px; font-weight: 800; white-space: nowrap; }
+.inox-assistant__foot.is-confirming { align-items: flex-start; flex-direction: column; padding-block: 10px; font-size: 11px; line-height: 1.4; }
+.inox-assistant__foot.is-confirming > div { width: 100%; justify-content: flex-end; }
+@media (max-width: 560px) { .inox-assistant { right: 10px; bottom: 10px; left: 10px; } .inox-assistant__bubble { width: 100%; justify-content: center; } .inox-assistant.is-open .inox-assistant__bubble { display: none; } .inox-assistant__window { width: 100%; height: calc(100dvh - 20px); max-height: calc(100dvh - 20px); margin-bottom: 0; } }
+body:has(.inox-assistant.is-open) .installationInox { display: none; }
+@media (max-width: 560px) { .inox-assistant__foot { align-items: flex-start; flex-direction: column; } .inox-assistant__form { max-height: none; } }
+@media (prefers-reduced-motion: reduce) { .inox-assistant__bubble { transition: none; } }
+.inox-assistant__window { grid-template-rows: auto minmax(180px, 1fr) auto auto auto; animation: inox-assistant-enter .24s cubic-bezier(.2,.8,.2,1) both; transform-origin: bottom right; }
+.inox-assistant__window[data-state="closing"] { animation: inox-assistant-exit .2s ease-in both; pointer-events: none; }
+.inox-assistant.is-offline .inox-assistant__window { grid-template-rows: auto auto minmax(180px, 1fr) auto auto auto; }
+.inox-assistant.is-intake .inox-assistant__window { grid-template-rows: auto minmax(65px, 110px) minmax(0, 1fr) auto; }
+.inox-assistant.is-intake.is-offline .inox-assistant__window { grid-template-rows: auto auto minmax(65px, 110px) minmax(0, 1fr) auto; }
+.inox-assistant__head { align-items: center; padding: 11px 15px; }
+.inox-assistant__brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.inox-assistant__brand img { flex: 0 0 auto; border-radius: 12px; }
+.inox-assistant__brand strong { font-size: 16px; letter-spacing: -.02em; }
+.inox-assistant__bubble img { width: 31px; height: 31px; border-radius: 50%; }
+.inox-assistant__choices { padding: 9px 16px; }
+.inox-assistant__foot { justify-content: flex-end; }
+.inox-assistant__actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+.inox-assistant__actions a, .inox-assistant__actions button { display: inline-flex; min-height: 30px; padding: 0 9px; align-items: center; border: 1px solid #a9c8dc; border-radius: 7px; background: #eff7fb; color: #0b4b75; cursor: pointer; font: inherit; font-size: 11px; font-weight: 700; text-decoration: none; }
+.inox-assistant__actions a:hover, .inox-assistant__actions button:hover { border-color: #f6951d; }
+@keyframes inox-assistant-enter { from { opacity: 0; transform: translateY(16px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes inox-assistant-exit { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(12px) scale(.98); } }
+@media (max-width: 560px) { .inox-assistant.is-closing .inox-assistant__bubble { display: none; } }
+@media (prefers-reduced-motion: reduce) { .inox-assistant__window, .inox-assistant__window[data-state="closing"] { animation-duration: .01ms; } }
+
 @media (max-width: 850px) {
   .entete:has(+ .immersionCore) .boutonMenu { background: rgba(25, 72, 108, .9); }
   .entete:has(+ .immersionCore) .navigation { background: rgba(13, 48, 78, .98); }
@@ -1236,3 +1324,23 @@ body {
     background: linear-gradient(135deg, rgba(27, 87, 132, .98), rgba(19, 66, 104, .98));
   }
 }
+
+/* Navigation entre les deux sites et saisie de l’assistant. */
+.passerelleExpertises { padding-block: 95px; background: #e9f4ff; }
+.passerelleExpertises__contenu { display: flex; align-items: end; justify-content: space-between; gap: 48px; }
+.passerelleExpertises__contenu > div { max-width: 700px; }
+.passerelleExpertises h2 { margin-block: 14px; }
+.passerelleExpertises p { max-width: 590px; color: var(--gris); line-height: 1.7; }
+.passerelleExpertises .bouton { flex: 0 0 auto; }
+.inox-assistant__composer { padding: 12px; }
+.inox-assistant__composer textarea { min-height: 62px; padding: 12px 13px; border-radius: 12px; font-size: 14px; line-height: 1.5; resize: vertical; }
+.inox-assistant__composer > div { align-items: center; gap: 8px; }
+.inox-assistant__hint { margin-left: auto; color: #54758b; font-size: 10px; white-space: nowrap; }
+.inox-assistant__composer > div button:last-child, .inox-assistant__submit { background: var(--accent); color: #102f4b; }
+.inox-assistant__foot { justify-content: flex-end; min-height: 40px; padding: 5px 12px; }
+.inox-assistant__foot .inox-assistant__reset { display: inline-flex; align-items: center; gap: 6px; min-height: 27px; padding: 2px 9px; border: 1px solid rgba(246,148,29,.65); border-radius: 999px; color: var(--accent); font-size: 11px; }
+.inox-assistant__foot .inox-assistant__reset:hover, .inox-assistant__foot .inox-assistant__reset:focus-visible { background: var(--accent); color: #102f4b; }
+.inox-assistant__foot.is-confirming { align-items: stretch; }
+.inox-assistant__foot.is-confirming button:last-child { padding: 5px 9px; border-radius: 6px; background: var(--accent); color: #102f4b; }
+@media (max-width: 720px) { .passerelleExpertises__contenu { align-items: flex-start; flex-direction: column; gap: 18px; } }
+@media (max-width: 420px) { .inox-assistant__hint { display: none; } }

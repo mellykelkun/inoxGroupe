@@ -23,6 +23,7 @@ function sansAbonnement() {
 
 export default function ContactFlottant() {
   const minuterie = useRef(null);
+  const assistantOuvert = useRef(false);
   const [visible, setVisible] = useState(false);
   const [ajoutContactLance, setAjoutContactLance] = useState(false);
   const plateforme = useSyncExternalStore(sansAbonnement, detecterPlateforme, () => "generique");
@@ -30,6 +31,7 @@ export default function ContactFlottant() {
   const programmer = useCallback((delai) => {
     window.clearTimeout(minuterie.current);
     minuterie.current = window.setTimeout(() => {
+      if (assistantOuvert.current) return;
       setVisible(true);
       try { window.sessionStorage.removeItem(CLE_PROCHAIN_RAPPEL); } catch {}
     }, Math.max(0, delai));
@@ -44,16 +46,31 @@ export default function ContactFlottant() {
     } catch {}
 
     const afficherImmediatement = () => {
+      if (assistantOuvert.current) return;
       window.clearTimeout(minuterie.current);
       setVisible(true);
     };
 
+    const masquerPourAssistant = () => {
+      assistantOuvert.current = true;
+      window.clearTimeout(minuterie.current);
+      setVisible(false);
+    };
+    const reprendreApresAssistant = () => {
+      assistantOuvert.current = false;
+      programmer(DELAI_RAPPEL);
+    };
+
     programmer(delai);
     window.addEventListener("inox:afficher-contact", afficherImmediatement);
+    window.addEventListener("inox:assistant-open", masquerPourAssistant);
+    window.addEventListener("inox:assistant-close", reprendreApresAssistant);
 
     return () => {
       window.clearTimeout(minuterie.current);
       window.removeEventListener("inox:afficher-contact", afficherImmediatement);
+      window.removeEventListener("inox:assistant-open", masquerPourAssistant);
+      window.removeEventListener("inox:assistant-close", reprendreApresAssistant);
     };
   }, [programmer]);
 

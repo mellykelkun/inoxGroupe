@@ -36,6 +36,8 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example
+IAkeys
+AIkeys
 
 # vercel
 .vercel/
@@ -43,3 +45,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.vercel
+
+# Livrables internes de présentation, volontairement hors dépôt
+presentation-projet-inox/
+.codex-presentation-build/

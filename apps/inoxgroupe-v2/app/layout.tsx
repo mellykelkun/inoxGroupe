@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./expertises/expertises.css";
+import { AssistantFlottant } from "@/components/assistant-flottant";
 
 export const metadata: Metadata = {
-  title: "INOX Technologies | Intégrateur de solutions informatiques",
+  title: "Le fil INOX | Expertises, pratiques et retours d’expérience",
   description:
-    "Infrastructure, cloud, cybersécurité, développement et infogérance pour les organisations en Côte d’Ivoire.",
+    "Le réseau éditorial d’INOX Technologies : expertises, pratiques et retours d’expérience pour les organisations en Côte d’Ivoire.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="fr">
-      <body>{children}</body>
+      <body>{children}<AssistantFlottant /></body>
     </html>
   );
 }

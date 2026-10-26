@@ -6,5 +6,7 @@
 .git
 .env
 .env.*
+IAkeys
+AIkeys
 !.env.example
 docs

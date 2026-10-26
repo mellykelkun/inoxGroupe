@@ -37,7 +37,7 @@ function getClient() {
   return contactClient;
 }
 
-export async function createContactRequest(request, fingerprintHash) {
+export async function createContactRequest(request, fingerprintHash, options = {}) {
   const client = getClient();
   const since = new Date(Date.now() - 15 * 60 * 1000).toISOString();
   const { count, error: countError } = await client
@@ -52,7 +52,7 @@ export async function createContactRequest(request, fingerprintHash) {
   const { data, error } = await client
     .from("contact_requests")
     .insert({
-      source: "site-inox-technologies",
+      source: options.source || "site-inox-technologies",
       profile_type: request.profileType,
       organization: request.organization || null,
       job_title: request.jobTitle || null,
@@ -68,6 +68,8 @@ export async function createContactRequest(request, fingerprintHash) {
       message: request.message,
       consented_at: new Date().toISOString(),
       fingerprint_hash: fingerprintHash,
+      assistant_conversation_id: options.conversationId || null,
+      ai_intake_fields: options.aiIntakeFields || {},
     })
     .select("id")
     .single();

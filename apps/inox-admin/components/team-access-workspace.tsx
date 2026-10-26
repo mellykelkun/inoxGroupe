@@ -18,7 +18,7 @@ type Invitation = {
   member: { userId: string; email: string; displayName: string; role: AdminRole };
 };
 
-export default function TeamAccessWorkspace({ current }: { current: AdminIdentity }) {
+export default function TeamAccessWorkspace({ current, refreshKey = 0 }: { current: AdminIdentity; refreshKey?: number }) {
   const [members, setMembers] = useState<AdminMemberSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [displayName, setDisplayName] = useState("");
@@ -49,23 +49,11 @@ export default function TeamAccessWorkspace({ current }: { current: AdminIdentit
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
-    fetch("/api/admin/members", { cache: "no-store" })
-      .then(async (response) => {
-        if (!response.ok) throw new Error();
-        return response.json() as Promise<{ members: AdminMemberSummary[] }>;
-      })
-      .then((data) => {
-        if (!cancelled) setMembers(data.members);
-      })
-      .catch(() => {
-        if (!cancelled) setMessage("Impossible de charger les membres pour le moment.");
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => { cancelled = true; };
-  }, []);
+    const timeout = window.setTimeout(() => {
+      void loadMembers();
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [loadMembers, refreshKey]);
 
   async function invite(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

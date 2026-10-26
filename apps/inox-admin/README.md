@@ -37,3 +37,19 @@ npm run dev -w @inox/inox-admin
 
 Sans configuration Supabase, `/` reste verrouillée. L’interface statique reste
 consultable en développement sur `/apercu`, sans aucune autorisation métier.
+
+## Synchronisation temps réel
+
+L’admin s’abonne directement au curseur `admin_sync_state` avec Supabase
+Realtime. Le canal ne transporte aucune donnée métier : il signale seulement
+une modification, puis l’interface recharge ses routes authentifiées. Aucune
+fonction Vercel n’est maintenue ouverte pour cette synchronisation.
+
+La migration `20261001090000_add_admin_sync_state.sql` doit être appliquée au
+projet Supabase partagé pour activer les signaux provenant des sites publics.
+
+Le Journal INOX permet de rédiger et publier des contenus avec jusqu’à dix
+illustrations par publication. Les fichiers sont stockés dans le bucket
+`editorial-media`, dont l’écriture est réservée à l’admin, puis servis par le
+site Expertises.
+La migration `20261001131822_editorial_post_images.sql` prépare ce stockage.

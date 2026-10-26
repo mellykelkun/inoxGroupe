@@ -347,6 +347,13 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="section passerelleExpertises" aria-labelledby="passerelle-expertises-title">
+          <div className="conteneur passerelleExpertises__contenu">
+            <div><span className="eyebrow">Le fil INOX</span><h2 id="passerelle-expertises-title">Des idées et des expertises à suivre.</h2><p>Consultez les actualités, les retours d’expérience et les domaines d’expertise du réseau INOX.</p></div>
+            <a className="bouton bouton--accent" href="https://inox-expertises.vercel.app/#journal">Explorer le fil INOX <span aria-hidden="true">↗</span></a>
+          </div>
+        </section>
+
         <section className="section appel">
           <div className="conteneur appel__contenu">
             <Revelation>

@@ -30,13 +30,10 @@ export function Navigation({ internal = false }: { internal?: boolean }) {
       </Link>
 
       <nav className={`nav-links ${open ? "is-open" : ""}`} aria-label="Navigation principale">
-        <Link href={sectionHref("groupe")} onClick={close}>Le groupe</Link>
+        <Link href={sectionHref("journal")} onClick={close}>Le fil INOX</Link>
         <Link href={sectionHref("expertises")} onClick={close}>Expertises</Link>
-        <Link href={sectionHref("services")} onClick={close}>Services</Link>
-        <Link href={sectionHref("equipe")} onClick={close}>Équipe</Link>
-        <Link href={sectionHref("references")} onClick={close}>Clients</Link>
-        <Link href={sectionHref("partenaires")} onClick={close}>Partenaires</Link>
-        <Link className="nav-contact" href={sectionHref("contact")} onClick={close}>Parler à un expert <span>↗</span></Link>
+        <Link href={sectionHref("solutions")} onClick={close}>Solutions</Link>
+        <a className="nav-contact" href="https://inox-groupe.vercel.app/#contact" onClick={close}>Parler à un expert <span>↗</span></a>
       </nav>
 
       <button className={`menu-button ${open ? "is-open" : ""}`} type="button" onClick={() => setOpen((value) => !value)} aria-expanded={open} aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}>

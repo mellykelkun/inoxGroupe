@@ -179,7 +179,7 @@ function OfficialComposer({
   );
 }
 
-export default function ForumWorkspace() {
+export default function ForumWorkspace({ refreshKey = 0 }: { refreshKey?: number }) {
   const [threads, setThreads] = useState<ForumThread[]>([]);
   const [selectedThreadId, setSelectedThreadId] = useState(0);
   const [selectedReplyId, setSelectedReplyId] = useState<number | null>(null);
@@ -215,7 +215,7 @@ export default function ForumWorkspace() {
       refreshForum().catch((error) => setNotice(error instanceof Error ? error.message : "Chargement impossible."));
     }, 0);
     return () => window.clearTimeout(timeout);
-  }, [refreshForum]);
+  }, [refreshForum, refreshKey]);
 
   const selectedThread = threads.find((thread) => thread.id === selectedThreadId) ?? threads[0];
   const selectedReply = selectedThread?.replies.find((reply) => reply.id === selectedReplyId);

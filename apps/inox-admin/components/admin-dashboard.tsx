@@ -1,13 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { RealtimeChannel, SupabaseClient } from "@supabase/supabase-js";
 import ContactWorkspaceLive from "./contact-workspace";
+import EditorialWorkspace from "./editorial-workspace";
 import ForumWorkspace from "./forum-workspace";
 import TeamAccessWorkspace from "./team-access-workspace";
+import AssistantWorkspace from "./assistant-workspace";
 import type { AdminIdentity } from "@/lib/auth/types";
+import { createClient as createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 type SectionId =
   | "overview"
+  | "assistant"
   | "contacts"
   | "forum"
   | "journal"
@@ -34,6 +39,7 @@ type IconName =
 
 const navigation: Array<{ id: SectionId; label: string; icon: IconName; count?: number }> = [
   { id: "overview", label: "Vue d’ensemble", icon: "grid" },
+  { id: "assistant", label: "Pilotage IA", icon: "spark" },
   { id: "contacts", label: "Demandes", icon: "inbox" },
   { id: "forum", label: "Forum", icon: "forum" },
   { id: "journal", label: "Journal INOX", icon: "journal" },
@@ -47,6 +53,11 @@ const sectionMeta: Record<SectionId, { eyebrow: string; title: string; descripti
     title: "Bonjour, équipe INOX.",
     description: "Accédez aux demandes, aux échanges et aux accès de l’équipe.",
   },
+  assistant: {
+    eyebrow: "Pilotage assisté",
+    title: "Des décisions plus lisibles, à partir de vos données.",
+    description: "Interrogez les informations INOX, préparez des actions et gardez la main sur chaque écriture.",
+  },
   contacts: {
     eyebrow: "Relation commerciale",
     title: "Demandes de recontact",
@@ -58,9 +69,9 @@ const sectionMeta: Record<SectionId, { eyebrow: string; title: string; descripti
     description: "Préservez la qualité des échanges et préparez les réponses officielles.",
   },
   journal: {
-    eyebrow: "Futur contenu éditorial",
+    eyebrow: "Publication éditoriale",
     title: "Journal INOX",
-    description: "Préparez les futurs articles destinés au site INOX Expertises.",
+    description: "Rédigez, publiez et synchronisez les informations du réseau INOX.",
   },
   presence: {
     eyebrow: "Écosystème numérique",
@@ -89,8 +100,13 @@ type OverviewStats = {
   };
   journal: {
     source: "inoxgroupe-v2";
-    connection: "pending";
+    connection: "live";
   };
+};
+
+type NotificationCounts = {
+  contacts: number;
+  forum: number;
 };
 
 function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
@@ -140,33 +156,6 @@ function BrandMark() {
   );
 }
 
-function Pill({ children, tone = "neutral" }: { children: React.ReactNode; tone?: string }) {
-  return <span className={`pill pill--${tone}`}>{children}</span>;
-}
-
-function JournalWorkspace() {
-  return (
-    <div className="journal-workspace">
-      <aside className="journal-bridge">
-        <div className="journal-bridge__icon"><Icon name="journal" size={23} /></div>
-        <div>
-          <span className="card-label">Branchement prévu</span>
-          <h2>Admin INOX → Site Expertises</h2>
-          <p>Le Journal INOX sera rédigé ici puis publié sur le site <strong>inox-expertises</strong> après validation.</p>
-        </div>
-        <div className="bridge-state"><i />Connexion non activée</div>
-      </aside>
-      <section className="panel section-panel">
-        <div className="panel-heading">
-          <div><span className="card-label">Aucune publication active</span><h2>Le Journal sera ouvert après validation éditoriale</h2></div>
-          <Pill tone="blue">Non publié</Pill>
-        </div>
-        <p>La future rubrique utilisera uniquement les contenus rédigés et validés par l’équipe INOX avant leur publication.</p>
-      </section>
-    </div>
-  );
-}
-
 function PresenceCards({ detailed = false }: { detailed?: boolean }) {
   const sites = [
     {
@@ -181,8 +170,8 @@ function PresenceCards({ detailed = false }: { detailed?: boolean }) {
       label: "Site Expertises",
       name: "inox-expertises",
       url: "https://inox-expertises.vercel.app",
-      status: "Préparation SEO",
-      detail: "4 pôles · Indexation désactivée",
+      status: "En ligne",
+      detail: "4 pôles · Fil éditorial SSE actif",
       tone: "cyan",
     },
   ];
@@ -240,9 +229,9 @@ function Overview({
         <article className="metric-card">
           <div className="metric-icon metric-icon--cyan"><Icon name="clock" /></div>
           <span>Journal INOX</span>
-          <strong>Préparation</strong>
-          <small>Branchement réservé au site Expertises · aucune donnée du site principal</small>
-          <button type="button" onClick={() => onNavigate("journal")}>Préparer le Journal <Icon name="arrow" size={16} /></button>
+          <strong>Actif</strong>
+          <small>Publication admin → site Expertises · synchronisation SSE</small>
+          <button type="button" onClick={() => onNavigate("journal")}>Publier dans le Journal <Icon name="arrow" size={16} /></button>
         </article>
         <article className="metric-card">
           <div className="metric-icon metric-icon--navy"><Icon name="pulse" /></div>
@@ -279,10 +268,10 @@ function Overview({
         </div>
         <aside className="editorial-card">
           <div className="editorial-orbit"><Icon name="spark" size={24} /></div>
-          <span className="card-label">Futur canal éditorial</span>
+          <span className="card-label">Canal éditorial partagé</span>
           <h2>Journal INOX</h2>
-          <p>Un espace de publication sera relié au site Expertises lorsque la rubrique sera prête.</p>
-          <div className="editorial-date"><Icon name="clock" size={16} /> Branchement non activé</div>
+          <p>Publiez les informations qui alimentent en temps réel le fil éditorial du site Expertises.</p>
+          <div className="editorial-date"><Icon name="check" size={16} /> Publication synchronisée</div>
           <button type="button" onClick={() => onNavigate("journal")}>Ouvrir l’espace Journal <Icon name="arrow" size={16} /></button>
         </aside>
       </section>
@@ -290,21 +279,35 @@ function Overview({
   );
 }
 
-function SectionContent({ section, currentMember }: { section: SectionId; currentMember: AdminIdentity }) {
-  if (section === "contacts") return <ContactWorkspaceLive />;
-  if (section === "forum") return <ForumWorkspace />;
-  if (section === "journal") return <JournalWorkspace />;
+function SectionContent({
+  section,
+  currentMember,
+  refreshKey,
+}: {
+  section: SectionId;
+  currentMember: AdminIdentity;
+  refreshKey: number;
+}) {
+  if (section === "contacts") return <ContactWorkspaceLive current={currentMember} refreshKey={refreshKey} />;
+  if (section === "assistant") return <AssistantWorkspace current={currentMember} />;
+  if (section === "forum") return <ForumWorkspace refreshKey={refreshKey} />;
+  if (section === "journal") return <EditorialWorkspace refreshKey={refreshKey} />;
   if (section === "presence") return <PresenceCards detailed />;
-  if (section === "team") return <TeamAccessWorkspace current={currentMember} />;
+  if (section === "team") return <TeamAccessWorkspace current={currentMember} refreshKey={refreshKey} />;
   return null;
 }
+
+type LiveStatus = "connecting" | "live" | "reconnecting";
 
 export default function AdminDashboard({ currentMember }: { currentMember: AdminIdentity }) {
   const [activeSection, setActiveSection] = useState<SectionId>("overview");
   const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [overviewStats, setOverviewStats] = useState<OverviewStats | null>(null);
+  const [notificationCounts, setNotificationCounts] = useState<NotificationCounts>({ contacts: 0, forum: 0 });
   const [overviewLoading, setOverviewLoading] = useState(true);
+  const [liveRevision, setLiveRevision] = useState(0);
+  const [liveStatus, setLiveStatus] = useState<LiveStatus>("connecting");
   const meta = sectionMeta[activeSection];
   const today = new Intl.DateTimeFormat("fr-FR", {
     day: "2-digit",
@@ -315,6 +318,75 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
 
   const activeLabel = navigation.find((item) => item.id === activeSection)?.label.toLowerCase();
   const searchHint = activeSection === "overview" ? "Rechercher dans INOX Admin" : `Rechercher dans ${activeLabel}`;
+
+  useEffect(() => {
+    const followLinkedSection = () => {
+      const section = window.location.hash.slice(1) as SectionId;
+      if (navigation.some((item) => item.id === section)) {
+        setActiveSection(section);
+        setMenuOpen(false);
+        setQuery("");
+      }
+    };
+    followLinkedSection();
+    window.addEventListener("hashchange", followLinkedSection);
+    window.addEventListener("popstate", followLinkedSection);
+    return () => {
+      window.removeEventListener("hashchange", followLinkedSection);
+      window.removeEventListener("popstate", followLinkedSection);
+    };
+  }, []);
+
+  useEffect(() => {
+    let disposed = false;
+    let client: SupabaseClient | undefined;
+    let channel: RealtimeChannel | undefined;
+    let hasSubscribed = false;
+
+    void createBrowserSupabaseClient()
+      .then((supabase) => {
+        if (disposed) return;
+        client = supabase;
+        channel = supabase
+          .channel("inox-admin-sync")
+          .on(
+            "postgres_changes",
+            {
+              event: "UPDATE",
+              schema: "public",
+              table: "admin_sync_state",
+              filter: "scope=eq.all",
+            },
+            (payload) => {
+              const revision = Number(payload.new.revision);
+              setLiveStatus("live");
+              setLiveRevision((current) => Number.isSafeInteger(revision) && revision > current
+                ? revision
+                : current + 1);
+            },
+          )
+          .subscribe((status) => {
+            if (disposed) return;
+            if (status === "SUBSCRIBED") {
+              setLiveStatus("live");
+              if (hasSubscribed) setLiveRevision((current) => current + 1);
+              hasSubscribed = true;
+              return;
+            }
+            if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") {
+              setLiveStatus("reconnecting");
+            }
+          });
+      })
+      .catch(() => {
+        if (!disposed) setLiveStatus("reconnecting");
+      });
+
+    return () => {
+      disposed = true;
+      if (client && channel) void client.removeChannel(channel);
+    };
+  }, []);
 
   useEffect(() => {
     if (activeSection !== "overview") return;
@@ -340,11 +412,64 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
       active = false;
       controller.abort();
     };
-  }, [activeSection]);
+  }, [activeSection, liveRevision]);
+
+  useEffect(() => {
+    const section = activeSection === "contacts" || activeSection === "forum"
+      ? activeSection
+      : null;
+    const controller = new AbortController();
+    let active = true;
+
+    async function syncNotifications() {
+      if (section) {
+        const readResponse = await fetch("/api/admin/notifications", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ section }),
+          signal: controller.signal,
+        });
+        if (!readResponse.ok) {
+          console.error("Marquage de la section comme lue impossible");
+        }
+      }
+
+      const response = await fetch("/api/admin/notifications", {
+        cache: "no-store",
+        signal: controller.signal,
+      });
+      if (!response.ok) throw new Error("notifications_unavailable");
+      const payload = await response.json() as {
+        notifications?: Partial<NotificationCounts>;
+      };
+      const count = (value: unknown) => typeof value === "number" && Number.isSafeInteger(value) && value > 0 ? value : 0;
+
+      if (active) {
+        setNotificationCounts({
+          contacts: count(payload.notifications?.contacts),
+          forum: count(payload.notifications?.forum),
+        });
+      }
+    }
+
+    syncNotifications().catch((error) => {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      if (active) console.error("Synchronisation des notifications impossible", error);
+    });
+
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [activeSection, liveRevision]);
 
   function navigate(section: SectionId) {
     if (section === "overview" && activeSection !== "overview") setOverviewLoading(true);
+    if (section === "contacts" || section === "forum") {
+      setNotificationCounts((current) => ({ ...current, [section]: 0 }));
+    }
     setActiveSection(section);
+    if (window.location.hash !== `#${section}`) window.history.pushState(null, "", `#${section}`);
     setMenuOpen(false);
     setQuery("");
   }
@@ -362,9 +487,9 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
         <nav className="side-nav" aria-label="Navigation de l’administration">
           {navigation.map((item) => {
             const count = item.id === "contacts"
-              ? overviewStats?.contacts.new
+              ? notificationCounts.contacts
               : item.id === "forum"
-                ? overviewStats?.forum.topics
+                ? notificationCounts.forum
                 : undefined;
             return (
             <button
@@ -376,7 +501,14 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
             >
               <Icon name={item.icon} />
               <span>{item.label}</span>
-              {typeof count === "number" ? <b>{count}</b> : null}
+              {typeof count === "number" && count > 0 ? (
+                <span
+                  className="nav-badge"
+                  aria-label={`${count} ${item.id === "contacts" ? "nouvelles demandes" : "nouveaux sujets"}`}
+                >
+                  {count}
+                </span>
+              ) : null}
             </button>
             );
           })}
@@ -400,6 +532,10 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
           </label>
           <div className="topbar-actions">
             <span className="demo-badge"><i /> Données sécurisées</span>
+            <span className={`live-sync live-sync--${liveStatus}`} aria-live="polite">
+              <i />
+              {liveStatus === "live" ? "Mise à jour en direct" : liveStatus === "connecting" ? "Connexion en direct…" : "Reconnexion en cours…"}
+            </span>
             <button className="icon-button" type="button" aria-label="Notifications"><Icon name="bell" /></button>
             <button className="primary-action" type="button" onClick={() => navigate("journal")}><Icon name="spark" size={17} /> Nouvelle publication</button>
           </div>
@@ -425,7 +561,7 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
 
           {activeSection === "overview"
             ? <Overview onNavigate={navigate} stats={overviewStats} loading={overviewLoading} />
-            : <SectionContent section={activeSection} currentMember={currentMember} />}
+            : <SectionContent section={activeSection} currentMember={currentMember} refreshKey={liveRevision} />}
         </div>
       </main>
     </div>

@@ -37,3 +37,7 @@ export function canInviteMembers(role: AdminRole) {
 export function canModerateForum(role: AdminRole) {
   return role === "owner" || role === "administrator" || role === "moderator";
 }
+
+export function canManageEditorial(role: AdminRole) {
+  return role === "owner" || role === "administrator" || role === "editor";
+}

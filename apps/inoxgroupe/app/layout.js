@@ -2,6 +2,7 @@ import "./globals.css";
 import localFont from "next/font/local";
 import ApplicationInox from "../composants/ApplicationInox";
 import ContactFlottant from "../composants/ContactFlottant";
+import AssistantFlottant from "../composants/AssistantFlottant";
 
 const perfograma = localFont({
   src: "./fonts/Perfograma.otf",
@@ -53,6 +54,7 @@ export default function RootLayout({ children }) {
         {children}
         <ApplicationInox />
         <ContactFlottant />
+        <AssistantFlottant />
       </body>
     </html>
   );

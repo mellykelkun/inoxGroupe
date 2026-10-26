@@ -55,7 +55,7 @@ export async function GET() {
       },
       journal: {
         source: "inoxgroupe-v2",
-        connection: "pending",
+        connection: "live",
       },
     },
     { headers: { "Cache-Control": "private, no-store, max-age=0" } },
