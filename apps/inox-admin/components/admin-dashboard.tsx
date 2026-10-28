@@ -497,6 +497,18 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
 
         <div className="workspace-label"><span>Espace</span><strong>INOX Technologies</strong></div>
         <nav id="admin-navigation" className="side-nav" aria-label="Navigation de l’administration">
+          <button
+            className={`sidebar-toggle ${sidebarCollapsed ? "is-collapsed" : ""}`}
+            type="button"
+            aria-controls="admin-navigation"
+            aria-expanded={!sidebarCollapsed}
+            aria-label={sidebarCollapsed ? "Déplier la navigation" : "Replier la navigation"}
+            title={sidebarCollapsed ? "Déplier la navigation" : "Replier la navigation"}
+            onClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
+          >
+            <Icon name="arrow" />
+            <span className="side-nav__label">{sidebarCollapsed ? "Déplier la navigation" : "Replier la navigation"}</span>
+          </button>
           {permittedNavigation.map((item) => {
             const count = item.id === "contacts"
               ? notificationCounts.contacts
@@ -538,16 +550,6 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
       <main className="main-area">
         <header className="topbar">
           <button className="menu-button" type="button" aria-label="Ouvrir le menu" onClick={() => setMenuOpen(true)}><Icon name="menu" /></button>
-          <button
-            className={`sidebar-toggle ${sidebarCollapsed ? "is-collapsed" : ""}`}
-            type="button"
-            aria-controls="admin-navigation"
-            aria-expanded={!sidebarCollapsed}
-            aria-label={sidebarCollapsed ? "Déplier la navigation" : "Replier la navigation"}
-            onClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
-          >
-            <Icon name="arrow" />
-          </button>
           <label className="search-box">
             <Icon name="search" />
             <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={searchHint} aria-label={searchHint} />

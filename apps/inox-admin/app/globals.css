@@ -17,6 +17,27 @@
 
 * {
   box-sizing: border-box;
+  scrollbar-color: var(--blue) #dcebf7;
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #dcebf7;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 3px solid #dcebf7;
+  border-radius: 999px;
+  background: var(--blue);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--orange);
 }
 
 html {
@@ -334,17 +355,12 @@ a {
   background: #fff;
 }
 
-.sidebar-toggle {
-  display: grid;
-  width: 42px;
-  height: 42px;
-  flex: 0 0 auto;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  color: #31556f;
-  background: #fff;
-  cursor: pointer;
+.side-nav .sidebar-toggle {
+  grid-template-columns: 22px 1fr;
+  margin-bottom: 8px;
+  border: 1px solid rgba(162, 207, 242, 0.2);
+  color: #e3f1fc;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .sidebar-toggle svg {
@@ -387,6 +403,10 @@ a {
 
 .admin-shell--sidebar-collapsed .side-nav button:hover {
   transform: none;
+}
+
+.admin-shell--sidebar-collapsed .side-nav .sidebar-toggle {
+  margin-bottom: 8px;
 }
 
 .admin-shell--sidebar-collapsed .side-nav__label {
@@ -2386,13 +2406,14 @@ a {
   overflow: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable both-edges;
+  touch-action: pan-x pan-y;
   border: 1px solid #dce8f0;
   border-radius: 11px;
 }
 
 .access-matrix table {
   width: 100%;
-  min-width: 960px;
+  min-width: 1320px;
   border-collapse: collapse;
   color: #294a66;
   font-size: 12px;
@@ -2799,7 +2820,7 @@ a {
     display: grid;
   }
 
-  .sidebar-toggle {
+  .side-nav .sidebar-toggle {
     display: none;
   }
 
