@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { canAccessAdminWorkspace, canInviteMembers, canManageContacts, canManageEditorial, canManageMember, canModerateForum, canReissueAdminInvitation, canUseAdminAssistant, canViewAdminOverview } from "./types.ts";
+import { canAccessAdminWorkspace, canInviteMembers, canManageContacts, canManageEditorial, canManageMember, canModerateForum, canReissueAdminInvitation, canUseAdminAssistant, canViewAdminOverview, canViewRoleAccessMatrix } from "./types.ts";
 
 test("seuls le propriétaire et l’administrateur peuvent inviter des membres", () => {
   assert.equal(canInviteMembers("owner"), true);
@@ -23,6 +23,8 @@ test("les permissions métier restent séparées par rôle", () => {
   assert.equal(canUseAdminAssistant("editor"), false);
   assert.equal(canViewAdminOverview("administrator"), true);
   assert.equal(canViewAdminOverview("viewer"), false);
+  assert.equal(canViewRoleAccessMatrix("owner"), true);
+  assert.equal(canViewRoleAccessMatrix("administrator"), false);
 });
 
 test("chaque rôle ne reçoit que les espaces autorisés", () => {

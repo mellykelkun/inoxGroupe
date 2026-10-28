@@ -4,7 +4,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ADMIN_EMAIL_EXAMPLE, ADMIN_EMAIL_INPUT_PATTERN } from "@/lib/auth/admin-email";
 import type { AdminIdentity, AdminMemberSummary, AdminRole } from "@/lib/auth/types";
-import { canInviteMembers, canManageMember } from "@/lib/auth/types";
+import { canInviteMembers, canManageMember, canViewRoleAccessMatrix } from "@/lib/auth/types";
 
 const roleLabels: Record<AdminRole, string> = {
   owner: "Propriétaire",
@@ -61,6 +61,16 @@ type MemberAction = {
   member: AdminMemberSummary;
 };
 
+type RoleAccessMatrix = {
+  roles: Array<{ id: AdminRole; label: string }>;
+  capabilities: Array<{
+    area: string;
+    action: string;
+    grantedTo: AdminRole[];
+    detail?: Partial<Record<AdminRole, string>>;
+  }>;
+};
+
 function invitationErrorMessage(error: string | undefined) {
   if (error === "invalid_admin_email") return "Utilisez une adresse nominative se terminant par @inox-group.net.";
   if (error === "member_already_exists") return "Ce compte est déjà actif, bloqué ou ne peut pas recevoir un nouveau lien.";
@@ -82,6 +92,9 @@ export default function TeamAccessWorkspace({ current, refreshKey = 0 }: { curre
   const [actionReason, setActionReason] = useState("");
   const [confirmationEmail, setConfirmationEmail] = useState("");
   const [mutatingUserId, setMutatingUserId] = useState<string | null>(null);
+  const [accessMatrix, setAccessMatrix] = useState<RoleAccessMatrix | null>(null);
+  const [accessMatrixLoading, setAccessMatrixLoading] = useState(() => canViewRoleAccessMatrix(current.role));
+  const [accessMatrixUnavailable, setAccessMatrixUnavailable] = useState(false);
 
   const roles = useMemo<AdminRole[]>(
     () => current.role === "owner"
@@ -124,6 +137,27 @@ export default function TeamAccessWorkspace({ current, refreshKey = 0 }: { curre
     const interval = window.setInterval(() => void loadMembers(invitation), 12_000);
     return () => window.clearInterval(interval);
   }, [invitation, loadMembers]);
+
+  useEffect(() => {
+    if (!canViewRoleAccessMatrix(current.role)) return;
+
+    const controller = new AbortController();
+    fetch("/api/admin/access-matrix", { cache: "no-store", signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("access_matrix_unavailable");
+        return response.json() as Promise<{ matrix: RoleAccessMatrix }>;
+      })
+      .then(({ matrix }) => setAccessMatrix(matrix))
+      .catch((error) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        setAccessMatrixUnavailable(true);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setAccessMatrixLoading(false);
+      });
+
+    return () => controller.abort();
+  }, [current.role]);
 
   async function invite(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -264,6 +298,47 @@ export default function TeamAccessWorkspace({ current, refreshKey = 0 }: { curre
           {rolePermissions[current.role].map((permission) => <li key={permission}><i />{permission}</li>)}
         </ul>
       </section>
+
+      {canViewRoleAccessMatrix(current.role) ? (
+        <section className="access-matrix" aria-labelledby="access-matrix-title">
+          <div className="access-matrix__heading">
+            <div>
+              <span className="card-label">Gouvernance des accès</span>
+              <h2 id="access-matrix-title">Matrice des rôles</h2>
+              <p>Référence complète des accès actuellement attribués dans l’administration INOX.</p>
+            </div>
+            <span className="access-matrix__secure"><i />Réservé au propriétaire</span>
+          </div>
+          {accessMatrixLoading ? <p className="empty-state">Vérification de la matrice d’accès…</p> : null}
+          {accessMatrixUnavailable ? <p className="access-matrix__error" role="alert">La matrice n’est pas disponible pour le moment. Actualisez la page pour réessayer.</p> : null}
+          {accessMatrix ? (
+            <div className="access-matrix__scroll" tabIndex={0} aria-label="Tableau des autorisations par rôle">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Domaine</th>
+                    <th scope="col">Autorisation</th>
+                    {accessMatrix.roles.map((roleItem) => <th scope="col" key={roleItem.id}>{roleItem.label}</th>)}
+                  </tr>
+                </thead>
+                <tbody>
+                  {accessMatrix.capabilities.map((capability) => (
+                    <tr key={`${capability.area}-${capability.action}`}>
+                      <th scope="row">{capability.area}</th>
+                      <td>{capability.action}</td>
+                      {accessMatrix.roles.map((roleItem) => {
+                        const granted = capability.grantedTo.includes(roleItem.id);
+                        const detail = capability.detail?.[roleItem.id];
+                        return <td key={roleItem.id}>{granted ? <span className="access-matrix__granted"><i />{detail ?? "Autorisé"}</span> : <span aria-label="Non attribué">—</span>}</td>;
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
 
       {canInviteMembers(current.role) ? <div className="access-columns">
         <section className="member-panel">

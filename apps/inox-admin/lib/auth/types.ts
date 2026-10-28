@@ -60,6 +60,10 @@ export function canViewAdminOverview(role: AdminRole) {
   return role === "owner" || role === "administrator";
 }
 
+export function canViewRoleAccessMatrix(role: AdminRole) {
+  return role === "owner";
+}
+
 export function canAccessAdminWorkspace(role: AdminRole, workspace: AdminWorkspace) {
   if (workspace === "presence" || workspace === "team") return true;
   if (workspace === "forum") return canModerateForum(role);
