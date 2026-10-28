@@ -507,7 +507,7 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
             onClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
           >
             <Icon name="arrow" />
-            <span className="side-nav__label">{sidebarCollapsed ? "Déplier la navigation" : "Replier la navigation"}</span>
+            <span className="side-nav__label">{sidebarCollapsed ? "Déplier" : "Replier"}</span>
           </button>
           {permittedNavigation.map((item) => {
             const count = item.id === "contacts"
