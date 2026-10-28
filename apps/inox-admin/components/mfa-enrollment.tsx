@@ -44,6 +44,9 @@ export default function MfaEnrollment({
         });
         if (!response.ok) {
           const result = await response.json().catch(() => ({})) as { error?: string };
+          if (result.error === "unauthenticated") {
+            throw new Error("SESSION_EXPIRED");
+          }
           if (result.error === "invalid_password" || result.error === "password_update_failed") {
             throw new Error("PASSWORD_REJECTED");
           }
@@ -74,11 +77,16 @@ export default function MfaEnrollment({
       setPassword("");
       setConfirmPassword("");
     } catch (caughtError) {
-      setError(
-        caughtError instanceof Error && caughtError.message === "PASSWORD_REJECTED"
-          ? "Ce mot de passe ne respecte pas la politique de sécurité. Choisissez-en un autre d’au moins 12 caractères."
-          : "L’activation n’a pas pu démarrer. Rechargez l’invitation ou contactez l’administrateur.",
-      );
+      if (caughtError instanceof Error && caughtError.message === "PASSWORD_REJECTED") {
+        setError("Ce mot de passe ne respecte pas la politique de sécurité. Choisissez-en un autre d’au moins 12 caractères.");
+      } else if (
+        caughtError instanceof Error &&
+        (caughtError.message === "SESSION_EXPIRED" || "status" in caughtError && caughtError.status === 401)
+      ) {
+        setError("Votre session d’activation a expiré. Ouvrez un nouveau lien sécurisé envoyé par l’administrateur.");
+      } else {
+        setError("L’activation n’a pas pu démarrer. Rechargez l’invitation ou contactez l’administrateur.");
+      }
     } finally {
       setPending(false);
     }

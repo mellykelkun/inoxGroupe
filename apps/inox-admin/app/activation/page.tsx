@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import AuthShell from "@/components/auth-shell";
 import MfaEnrollment from "@/components/mfa-enrollment";
+import { hasInitializedPassword } from "@/lib/auth/activation-password";
 import { createClient } from "@/lib/supabase/server";
 import { hasCompleteSupabaseConfig } from "@/lib/supabase/config";
 
@@ -26,7 +27,7 @@ export default async function ActivationPage() {
     >
       <MfaEnrollment
         email={userData.user.email ?? "Compte INOX"}
-        passwordReady={userData.user.app_metadata.inox_password_initialized === true}
+        passwordReady={hasInitializedPassword(userData.user)}
       />
     </AuthShell>
   );

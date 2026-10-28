@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { updateActivationPassword } from "@/lib/auth/activation-password";
 import { isAdminRole } from "@/lib/auth/types";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
@@ -55,13 +56,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
-  const { error: updateError } = await admin.auth.admin.updateUserById(userData.user.id, {
-    password,
-    app_metadata: {
-      ...metadata,
-      inox_password_initialized: true,
-    },
-  });
+  const { error: updateError } = await updateActivationPassword(supabase.auth, password);
   if (updateError) {
     return NextResponse.json({ error: "password_update_failed" }, { status: 400 });
   }
