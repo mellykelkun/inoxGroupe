@@ -1,10 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { AdminInvitationError, createAdminInvitation } from "@/lib/auth/admin-invitations";
+import { isAdminEmail, normalizeAdminEmail } from "@/lib/auth/admin-email";
 import { authenticateAdmin } from "@/lib/auth/server";
 import { resolveAdminOrigin } from "@/lib/auth/invitation-links";
 import { canInviteMembers, isAdminRole } from "@/lib/auth/types";
-
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(request: NextRequest) {
   const auth = await authenticateAdmin();
@@ -23,11 +22,14 @@ export async function POST(request: NextRequest) {
   }
 
   const input = body && typeof body === "object" ? body as Record<string, unknown> : {};
-  const email = typeof input.email === "string" ? input.email.trim().toLowerCase() : "";
+  const email = normalizeAdminEmail(input.email);
   const displayName = typeof input.displayName === "string" ? input.displayName.trim() : "";
   const role = input.role;
 
-  if (!emailPattern.test(email) || email.length > 254 || displayName.length < 2 || displayName.length > 100 || !isAdminRole(role) || role === "owner") {
+  if (!isAdminEmail(email)) {
+    return NextResponse.json({ error: "invalid_admin_email" }, { status: 400 });
+  }
+  if (displayName.length < 2 || displayName.length > 100 || !isAdminRole(role) || role === "owner") {
     return NextResponse.json({ error: "invalid_input" }, { status: 400 });
   }
   if (auth.identity.role !== "owner" && role === "administrator") {

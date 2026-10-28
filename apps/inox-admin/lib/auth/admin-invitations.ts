@@ -1,11 +1,13 @@
 import "server-only";
 
 import type { GenerateLinkProperties, User } from "@supabase/supabase-js";
+import { isAdminEmail, normalizeAdminEmail } from "@/lib/auth/admin-email";
 import { buildAdminInvitationUrl } from "@/lib/auth/invitation-links";
 import { canReissueAdminInvitation, type AdminRole } from "@/lib/auth/types";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export type AdminInvitationFailure =
+  | "invalid_admin_email"
   | "member_already_exists"
   | "invitation_failed"
   | "member_profile_failed";
@@ -106,6 +108,11 @@ export async function createAdminInvitation({
   invitedBy: string;
   origin: string;
 }) {
+  email = normalizeAdminEmail(email);
+  if (!isAdminEmail(email)) {
+    throw new AdminInvitationError("invalid_admin_email");
+  }
+
   const admin = createAdminClient();
   const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
     type: "invite",

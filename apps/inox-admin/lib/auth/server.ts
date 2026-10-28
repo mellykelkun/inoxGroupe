@@ -3,6 +3,7 @@ import "server-only";
 import type { User } from "@supabase/supabase-js";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { isAdminEmail } from "./admin-email";
 import { isAdminRole, type AdminIdentity } from "./types";
 
 type AuthFailure =
@@ -41,7 +42,11 @@ export async function authenticateAdmin(): Promise<AdminAuthResult> {
   if (error || !freshData.user) return { ok: false, reason: "forbidden" };
 
   const metadata = freshData.user.app_metadata;
-  if (metadata.inox_admin_active !== true || !isAdminRole(metadata.inox_admin_role)) {
+  if (
+    metadata.inox_admin_active !== true ||
+    !isAdminRole(metadata.inox_admin_role) ||
+    !isAdminEmail(freshData.user.email)
+  ) {
     return { ok: false, reason: "forbidden" };
   }
 

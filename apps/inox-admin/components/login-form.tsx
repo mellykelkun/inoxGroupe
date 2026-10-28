@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { ADMIN_EMAIL_EXAMPLE, ADMIN_EMAIL_INPUT_PATTERN, isAdminEmail, normalizeAdminEmail } from "@/lib/auth/admin-email";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginForm() {
@@ -13,13 +14,18 @@ export default function LoginForm() {
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const normalizedEmail = normalizeAdminEmail(email);
+    if (!isAdminEmail(normalizedEmail)) {
+      setError("Utilisez votre adresse nominative se terminant par @inox-group.net.");
+      return;
+    }
     setPending(true);
     setError("");
 
     try {
       const supabase = await createClient();
       const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
+        email: normalizedEmail,
         password,
       });
       if (signInError) throw signInError;
@@ -44,11 +50,16 @@ export default function LoginForm() {
         <input
           type="email"
           autoComplete="username"
+          maxLength={80}
+          pattern={ADMIN_EMAIL_INPUT_PATTERN}
+          title="Utilisez une adresse nominative se terminant par @inox-group.net."
           required
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          placeholder="nom@inox.ci"
+          placeholder={ADMIN_EMAIL_EXAMPLE}
+          aria-describedby="login-email-help"
         />
+        <small id="login-email-help" className="field-help">Format attendu : {ADMIN_EMAIL_EXAMPLE}</small>
       </label>
       <label>
         Mot de passe

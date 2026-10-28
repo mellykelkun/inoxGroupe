@@ -28,12 +28,16 @@ défaut et exige une session Supabase Auth au niveau `aal2` (mot de passe + TOTP
 4. Amorcer une seule fois le premier propriétaire :
 
 ```bash
-npm run auth:bootstrap -w @inox/inox-admin -- --email=proprietaire@inox.ci --name="Nom du propriétaire"
+npm run auth:bootstrap -w @inox/inox-admin -- --email=KevinA@inox-group.net --name="Nom du propriétaire" --admin-url=https://inox-admin.vercel.app
 ```
 
 Le lien retourné est confidentiel et à usage unique. Après cette exception
 d’amorçage, tous les autres comptes sont créés depuis **Équipe & accès** par un
 propriétaire ou un administrateur déjà connecté en AAL2.
+
+Tous les comptes de cette administration doivent utiliser une adresse nominative
+du domaine `@inox-group.net`. Cette restriction ne concerne pas les formulaires
+clients et publics, qui continuent d’accepter les adresses e-mail externes valides.
 
 ## Démarrage
 

@@ -2,6 +2,7 @@
 
 import { QRCodeSVG } from "qrcode.react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { ADMIN_EMAIL_EXAMPLE, ADMIN_EMAIL_INPUT_PATTERN } from "@/lib/auth/admin-email";
 import type { AdminIdentity, AdminMemberSummary, AdminRole } from "@/lib/auth/types";
 import { canInviteMembers } from "@/lib/auth/types";
 
@@ -70,6 +71,7 @@ export default function TeamAccessWorkspace({ current, refreshKey = 0 }: { curre
       });
       const data = await response.json() as Invitation & { error?: string };
       if (!response.ok) {
+        if (data.error === "invalid_admin_email") throw new Error("Utilisez une adresse nominative se terminant par @inox-group.net.");
         if (data.error === "member_already_exists") throw new Error("Ce compte existe déjà.");
         if (data.error === "owner_required") throw new Error("Seul le propriétaire peut nommer un administrateur.");
         throw new Error("L’invitation n’a pas pu être créée.");
@@ -134,7 +136,7 @@ export default function TeamAccessWorkspace({ current, refreshKey = 0 }: { curre
             <p>Créez un accès nominatif. Le nouveau membre activera lui-même son authentificateur.</p>
             <form className="invite-form" onSubmit={invite}>
               <label>Nom affiché<input required minLength={2} maxLength={100} value={displayName} onChange={(event) => setDisplayName(event.target.value)} placeholder="Prénom et nom" /></label>
-              <label>Adresse e-mail<input required type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="membre@inox.ci" /></label>
+              <label>Adresse e-mail INOX<input required type="email" autoComplete="off" maxLength={80} pattern={ADMIN_EMAIL_INPUT_PATTERN} title="Utilisez une adresse nominative se terminant par @inox-group.net." value={email} onChange={(event) => setEmail(event.target.value)} placeholder={ADMIN_EMAIL_EXAMPLE} aria-describedby="admin-email-help" /><small id="admin-email-help" className="field-help">Adresse nominative obligatoire au format {ADMIN_EMAIL_EXAMPLE}.</small></label>
               <label>Rôle<select value={role} onChange={(event) => setRole(event.target.value as AdminRole)}>{roles.map((item) => <option value={item} key={item}>{roleLabels[item]}</option>)}</select></label>
               <button className="auth-submit" type="submit" disabled={pending}>{pending ? "Création…" : "Créer le QR d’invitation"}</button>
             </form>

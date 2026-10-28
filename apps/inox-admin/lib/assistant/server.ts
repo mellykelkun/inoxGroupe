@@ -3,6 +3,7 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { Groq } from "groq-sdk";
 import type { NextRequest } from "next/server";
+import { ADMIN_EMAIL_INPUT_PATTERN, isAdminEmail, normalizeAdminEmail } from "@/lib/auth/admin-email";
 import { createAdminInvitation } from "@/lib/auth/admin-invitations";
 import { resolveAdminOrigin } from "@/lib/auth/invitation-links";
 import { canInviteMembers, canManageEditorial, canModerateForum, isAdminRole, type AdminIdentity } from "@/lib/auth/types";
@@ -132,7 +133,7 @@ export const adminTools = [
     function: {
       name: "invite_admin_member",
       description: "Prépare l’invitation d’un membre admin. Une confirmation explicite est requise et les droits du rôle sont contrôlés côté serveur.",
-      parameters: { type: "object", properties: { email: { type: "string" }, displayName: { type: "string" }, role: { type: "string", enum: ["administrator", "moderator", "editor", "viewer"] } }, required: ["email", "displayName", "role"], additionalProperties: false },
+      parameters: { type: "object", properties: { email: { type: "string", pattern: `^${ADMIN_EMAIL_INPUT_PATTERN}$`, description: "Adresse nominative obligatoire en @inox-group.net, par exemple KevinA@inox-group.net." }, displayName: { type: "string" }, role: { type: "string", enum: ["administrator", "moderator", "editor", "viewer"] } }, required: ["email", "displayName", "role"], additionalProperties: false },
     },
   },
   {
@@ -284,10 +285,10 @@ export async function executeAdminTool(name: string, args: Record<string, unknow
     return confirmation(context.conversationId, context.auth, name, { ids }, `Supprimer définitivement ${ids.length} demande${ids.length > 1 ? "s" : ""} : ${references}. Les coordonnées et messages seront effacés ; seule une trace d’audit sans données personnelles restera.`);
   }
   if (name === "invite_admin_member") {
-    const email = clean(args.email).toLowerCase();
+    const email = normalizeAdminEmail(clean(args.email));
     const displayName = clean(args.displayName);
     const role = args.role;
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || displayName.length < 2 || displayName.length > 100 || !isAdminRole(role) || role === "owner") return { ok: false, reason: "paramètres_invalides" };
+    if (!isAdminEmail(email) || displayName.length < 2 || displayName.length > 100 || !isAdminRole(role) || role === "owner") return { ok: false, reason: "paramètres_invalides" };
     if (!canInviteMembers(context.auth.role)) return { ok: false, reason: "rôle_insuffisant" };
     if (context.auth.role !== "owner" && role === "administrator") return { ok: false, reason: "propriétaire_requis" };
     return confirmation(context.conversationId, context.auth, name, { email, displayName, role }, `Inviter ${displayName} (${email}) avec le rôle ${role}`);
@@ -370,10 +371,10 @@ export async function executePendingAction(conversationId: string, token: string
   }
   if (pending.action === "invite_admin_member") {
     if (!canInviteMembers(auth.role)) throw new Error("ASSISTANT_ROLE_FORBIDDEN");
-    const email = String(pending.args?.email || "");
+    const email = normalizeAdminEmail(pending.args?.email);
     const displayName = String(pending.args?.displayName || "");
     const role = pending.args?.role;
-    if (!isAdminRole(role) || role === "owner" || (auth.role !== "owner" && role === "administrator")) throw new Error("ASSISTANT_ROLE_FORBIDDEN");
+    if (!isAdminEmail(email) || !isAdminRole(role) || role === "owner" || (auth.role !== "owner" && role === "administrator")) throw new Error("ASSISTANT_ROLE_FORBIDDEN");
     const origin = resolveAdminOrigin({ requestOrigin: request.nextUrl.origin, configuredOrigin: process.env.ADMIN_URL || process.env.NEXT_PUBLIC_ADMIN_URL, vercelProductionUrl: process.env.VERCEL_PROJECT_PRODUCTION_URL, vercelDeploymentUrl: process.env.VERCEL_URL, production: process.env.NODE_ENV === "production" });
     const invitation = await createAdminInvitation({ email, displayName, role, invitedBy: auth.userId, origin }).catch(() => { throw new Error("ASSISTANT_INVITE_FAILED"); });
     await admin.from("audit_logs").insert({ admin_user_id: auth.userId, action: invitation.reissued ? "assistant_member_reinvited" : "assistant_member_invited", entity_type: "admin_member", entity_id: invitation.member.userId, metadata: { email, role, conversation_id: conversationId, source: "admin_assistant" } });
