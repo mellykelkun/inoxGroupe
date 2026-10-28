@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { authenticateAdmin } from "@/lib/auth/server";
+import { canUseAdminAssistant } from "@/lib/auth/types";
 import { isAdminWriteRequest, parseContactDeleteCommand, parseContactStatusCommand } from "@/lib/assistant/commands";
 import { sanitizePageLinks } from "../../../../../../../packages/assistant-links";
 import {
@@ -43,6 +44,7 @@ function streamResponse(work: (send: (event: string, data: unknown) => void) => 
 export async function POST(request: NextRequest) {
   const auth = await authenticateAdmin();
   if (!auth.ok) return denied(auth.reason);
+  if (!canUseAdminAssistant(auth.identity.role)) return denied("insufficient_role");
 
   const size = Number(request.headers.get("content-length") || 0);
   if (size > 30_000) return NextResponse.json({ error: "La demande est trop volumineuse." }, { status: 413 });

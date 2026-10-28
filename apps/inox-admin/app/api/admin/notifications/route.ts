@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { authenticateAdmin } from "@/lib/auth/server";
+import { canManageContacts, canModerateForum } from "@/lib/auth/types";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +17,10 @@ function denied(reason: string) {
 
 function isNotificationSection(value: unknown): value is NotificationSection {
   return typeof value === "string" && sections.has(value);
+}
+
+function canAccessNotificationSection(role: Parameters<typeof canManageContacts>[0], section: NotificationSection) {
+  return section === "contacts" ? canManageContacts(role) : canModerateForum(role);
 }
 
 export async function GET() {
@@ -36,21 +41,24 @@ export async function GET() {
   const lastSeenBySection = new Map(
     (reads ?? []).map((read) => [read.section, read.last_seen_at]),
   );
-  const contactsQuery = admin
-    .from("contact_requests")
-    .select("id", { count: "exact", head: true })
-    .eq("status", "new");
-  const forumQuery = admin
-    .from("forum_messages")
-    .select("id", { count: "exact", head: true })
-    .is("parent_id", null);
+  const mayReadContacts = canAccessNotificationSection(auth.identity.role, "contacts");
+  const mayReadForum = canAccessNotificationSection(auth.identity.role, "forum");
+  const contactsQuery = mayReadContacts
+    ? admin.from("contact_requests").select("id", { count: "exact", head: true }).eq("status", "new")
+    : null;
+  const forumQuery = mayReadForum
+    ? admin.from("forum_messages").select("id", { count: "exact", head: true }).is("parent_id", null)
+    : null;
   const contactsSince = lastSeenBySection.get("contacts");
   const forumSince = lastSeenBySection.get("forum");
 
-  if (contactsSince) contactsQuery.gt("created_at", contactsSince);
-  if (forumSince) forumQuery.gt("created_at", forumSince);
+  if (contactsSince && contactsQuery) contactsQuery.gt("created_at", contactsSince);
+  if (forumSince && forumQuery) forumQuery.gt("created_at", forumSince);
 
-  const [contacts, forum] = await Promise.all([contactsQuery, forumQuery]);
+  const [contacts, forum] = await Promise.all([
+    contactsQuery ?? Promise.resolve({ count: 0, error: null }),
+    forumQuery ?? Promise.resolve({ count: 0, error: null }),
+  ]);
   const error = contacts.error ?? forum.error;
   if (error) {
     console.error("Comptage des notifications impossible", error);
@@ -81,6 +89,9 @@ export async function POST(request: Request) {
 
   if (!isNotificationSection(input.section)) {
     return NextResponse.json({ error: "invalid_section" }, { status: 400 });
+  }
+  if (!canAccessNotificationSection(auth.identity.role, input.section)) {
+    return denied("insufficient_role");
   }
 
   const admin = createAdminClient();

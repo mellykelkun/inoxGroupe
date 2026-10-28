@@ -1,23 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { RealtimeChannel, SupabaseClient } from "@supabase/supabase-js";
 import ContactWorkspaceLive from "./contact-workspace";
 import EditorialWorkspace from "./editorial-workspace";
 import ForumWorkspace from "./forum-workspace";
 import TeamAccessWorkspace from "./team-access-workspace";
 import AssistantWorkspace from "./assistant-workspace";
-import type { AdminIdentity } from "@/lib/auth/types";
+import {
+  canAccessAdminWorkspace,
+  canManageEditorial,
+  type AdminIdentity,
+  type AdminWorkspace,
+} from "@/lib/auth/types";
 import { createClient as createBrowserSupabaseClient } from "@/lib/supabase/client";
 
-type SectionId =
-  | "overview"
-  | "assistant"
-  | "contacts"
-  | "forum"
-  | "journal"
-  | "presence"
-  | "team";
+type SectionId = AdminWorkspace;
 
 type IconName =
   | "grid"
@@ -46,6 +44,14 @@ const navigation: Array<{ id: SectionId; label: string; icon: IconName; count?: 
   { id: "presence", label: "Présence web", icon: "pulse" },
   { id: "team", label: "Équipe & accès", icon: "users" },
 ];
+
+function availableNavigation(role: AdminIdentity["role"]) {
+  return navigation.filter((item) => canAccessAdminWorkspace(role, item.id));
+}
+
+function firstAccessibleSection(role: AdminIdentity["role"]) {
+  return availableNavigation(role)[0]?.id ?? "team";
+}
 
 const sectionMeta: Record<SectionId, { eyebrow: string; title: string; description: string }> = {
   overview: {
@@ -300,7 +306,7 @@ function SectionContent({
 type LiveStatus = "connecting" | "live" | "reconnecting";
 
 export default function AdminDashboard({ currentMember }: { currentMember: AdminIdentity }) {
-  const [activeSection, setActiveSection] = useState<SectionId>("overview");
+  const [activeSection, setActiveSection] = useState<SectionId>(() => firstAccessibleSection(currentMember.role));
   const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [overviewStats, setOverviewStats] = useState<OverviewStats | null>(null);
@@ -309,6 +315,10 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
   const [liveRevision, setLiveRevision] = useState(0);
   const [liveStatus, setLiveStatus] = useState<LiveStatus>("connecting");
   const meta = sectionMeta[activeSection];
+  const permittedNavigation = useMemo(
+    () => availableNavigation(currentMember.role),
+    [currentMember.role],
+  );
   const today = new Intl.DateTimeFormat("fr-FR", {
     day: "2-digit",
     month: "short",
@@ -322,7 +332,7 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
   useEffect(() => {
     const followLinkedSection = () => {
       const section = window.location.hash.slice(1) as SectionId;
-      if (navigation.some((item) => item.id === section)) {
+      if (permittedNavigation.some((item) => item.id === section)) {
         setActiveSection(section);
         setMenuOpen(false);
         setQuery("");
@@ -335,7 +345,7 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
       window.removeEventListener("hashchange", followLinkedSection);
       window.removeEventListener("popstate", followLinkedSection);
     };
-  }, []);
+  }, [permittedNavigation]);
 
   useEffect(() => {
     let disposed = false;
@@ -389,7 +399,7 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
   }, []);
 
   useEffect(() => {
-    if (activeSection !== "overview") return;
+    if (activeSection !== "overview" || !canAccessAdminWorkspace(currentMember.role, "overview")) return;
 
     const controller = new AbortController();
     let active = true;
@@ -412,7 +422,7 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
       active = false;
       controller.abort();
     };
-  }, [activeSection, liveRevision]);
+  }, [activeSection, currentMember.role, liveRevision]);
 
   useEffect(() => {
     const section = activeSection === "contacts" || activeSection === "forum"
@@ -464,6 +474,7 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
   }, [activeSection, liveRevision]);
 
   function navigate(section: SectionId) {
+    if (!canAccessAdminWorkspace(currentMember.role, section)) return;
     if (section === "overview" && activeSection !== "overview") setOverviewLoading(true);
     if (section === "contacts" || section === "forum") {
       setNotificationCounts((current) => ({ ...current, [section]: 0 }));
@@ -485,7 +496,7 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
 
         <div className="workspace-label"><span>Espace</span><strong>INOX Technologies</strong></div>
         <nav className="side-nav" aria-label="Navigation de l’administration">
-          {navigation.map((item) => {
+          {permittedNavigation.map((item) => {
             const count = item.id === "contacts"
               ? notificationCounts.contacts
               : item.id === "forum"
@@ -509,7 +520,7 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
                   {count}
                 </span>
               ) : null}
-            </button>
+              </button>
             );
           })}
         </nav>
@@ -536,8 +547,8 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
               <i />
               {liveStatus === "live" ? "Mise à jour en direct" : liveStatus === "connecting" ? "Connexion en direct…" : "Reconnexion en cours…"}
             </span>
-            <button className="icon-button" type="button" aria-label="Notifications"><Icon name="bell" /></button>
-            <button className="primary-action" type="button" onClick={() => navigate("journal")}><Icon name="spark" size={17} /> Nouvelle publication</button>
+            {permittedNavigation.some((item) => item.id === "contacts" || item.id === "forum") ? <button className="icon-button" type="button" aria-label="Notifications"><Icon name="bell" /></button> : null}
+            {canManageEditorial(currentMember.role) ? <button className="primary-action" type="button" onClick={() => navigate("journal")}><Icon name="spark" size={17} /> Nouvelle publication</button> : null}
           </div>
         </header>
 

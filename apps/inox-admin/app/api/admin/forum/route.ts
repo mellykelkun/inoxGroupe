@@ -23,6 +23,7 @@ function clean(value: unknown) {
 export async function GET() {
   const auth = await authenticateAdmin();
   if (!auth.ok) return denied(auth.reason);
+  if (!canModerateForum(auth.identity.role)) return denied("insufficient_role");
 
   const admin = createAdminClient();
   const pageSize = 500;
@@ -78,7 +79,7 @@ export async function GET() {
         email: message.contact_id ? contactsById.get(message.contact_id) ?? "" : "forum@inox-group.net",
       })),
       blockedEmails: blocked.map((item) => item.email_normalized),
-      canModerate: canModerateForum(auth.identity.role),
+      canModerate: true,
     },
     { headers: { "Cache-Control": "private, no-store, max-age=0" } },
   );

@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { authenticateAdmin } from "@/lib/auth/server";
-import { canInviteMembers } from "@/lib/auth/types";
+import { canManageContacts } from "@/lib/auth/types";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +17,7 @@ function denied(reason: string) {
 export async function GET() {
   const auth = await authenticateAdmin();
   if (!auth.ok) return denied(auth.reason);
+  if (!canManageContacts(auth.identity.role)) return denied("insufficient_role");
 
   const admin = createAdminClient();
   const pageSize = 500;
@@ -47,6 +48,7 @@ export async function GET() {
 export async function PATCH(request: NextRequest) {
   const auth = await authenticateAdmin();
   if (!auth.ok) return denied(auth.reason);
+  if (!canManageContacts(auth.identity.role)) return denied("insufficient_role");
 
   let input: { id?: unknown; status?: unknown };
   try {
@@ -82,7 +84,7 @@ export async function PATCH(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   const auth = await authenticateAdmin();
   if (!auth.ok) return denied(auth.reason);
-  if (!canInviteMembers(auth.identity.role)) return denied("forbidden");
+  if (!canManageContacts(auth.identity.role)) return denied("insufficient_role");
 
   let input: { ids?: unknown; confirm?: unknown };
   try { input = await request.json(); }

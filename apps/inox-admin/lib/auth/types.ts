@@ -8,6 +8,15 @@ export const adminRoles = [
 
 export type AdminRole = (typeof adminRoles)[number];
 
+export type AdminWorkspace =
+  | "overview"
+  | "assistant"
+  | "contacts"
+  | "forum"
+  | "journal"
+  | "presence"
+  | "team";
+
 export type AdminIdentity = {
   userId: string;
   sessionId: string;
@@ -37,6 +46,27 @@ export function isAdminRole(value: unknown): value is AdminRole {
 
 export function canInviteMembers(role: AdminRole) {
   return role === "owner" || role === "administrator";
+}
+
+export function canManageContacts(role: AdminRole) {
+  return role === "owner" || role === "administrator";
+}
+
+export function canUseAdminAssistant(role: AdminRole) {
+  return role === "owner" || role === "administrator";
+}
+
+export function canViewAdminOverview(role: AdminRole) {
+  return role === "owner" || role === "administrator";
+}
+
+export function canAccessAdminWorkspace(role: AdminRole, workspace: AdminWorkspace) {
+  if (workspace === "presence" || workspace === "team") return true;
+  if (workspace === "forum") return canModerateForum(role);
+  if (workspace === "journal") return canManageEditorial(role);
+  if (workspace === "overview") return canViewAdminOverview(role);
+  if (workspace === "assistant") return canUseAdminAssistant(role);
+  return canManageContacts(role);
 }
 
 export function canManageMember(actorRole: AdminRole, targetRole: AdminRole) {

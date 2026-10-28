@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { authenticateAdmin } from "@/lib/auth/server";
+import { canViewAdminOverview } from "@/lib/auth/types";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +15,7 @@ function denied(reason: string) {
 export async function GET() {
   const auth = await authenticateAdmin();
   if (!auth.ok) return denied(auth.reason);
+  if (!canViewAdminOverview(auth.identity.role)) return denied("insufficient_role");
 
   const admin = createAdminClient();
   const [

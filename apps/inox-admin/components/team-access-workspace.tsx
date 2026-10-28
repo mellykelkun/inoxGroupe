@@ -20,6 +20,36 @@ const statusLabels: Record<AdminMemberSummary["status"], string> = {
   blocked: "Bloqué",
 };
 
+const rolePermissions: Record<AdminRole, readonly string[]> = {
+  owner: [
+    "Piloter les indicateurs, les demandes et les espaces d’administration.",
+    "Préparer des actions avec le pilotage IA, avec confirmation explicite.",
+    "Modérer le Forum INOX et gérer les adresses bloquées.",
+    "Créer, modifier, publier et archiver les publications du Journal INOX.",
+    "Créer des invitations et gérer les comptes administratifs non propriétaires.",
+    "Consulter la présence web des sites INOX.",
+  ],
+  administrator: [
+    "Piloter les indicateurs et suivre les demandes de recontact.",
+    "Préparer des actions avec le pilotage IA, avec confirmation explicite.",
+    "Modérer le Forum INOX et gérer les adresses bloquées.",
+    "Créer, modifier, publier et archiver les publications du Journal INOX.",
+    "Créer des invitations et gérer les comptes Modérateur, Éditeur et Lecteur.",
+    "Consulter la présence web des sites INOX.",
+  ],
+  moderator: [
+    "Modérer le Forum INOX, publier des réponses officielles et gérer les adresses bloquées.",
+    "Consulter la présence web des sites INOX.",
+  ],
+  editor: [
+    "Créer, modifier, publier et archiver les publications du Journal INOX.",
+    "Consulter la présence web des sites INOX.",
+  ],
+  viewer: [
+    "Consulter la présence web des sites INOX.",
+  ],
+};
+
 type Invitation = {
   invitationUrl: string;
   member: { userId: string; email: string; displayName: string; role: AdminRole };
@@ -224,7 +254,18 @@ export default function TeamAccessWorkspace({ current, refreshKey = 0 }: { curre
         </dl>
       </section>
 
-      <div className="access-columns">
+      <section className="access-permissions" aria-labelledby="access-permissions-title">
+        <div>
+          <span className="card-label">Vos autorisations</span>
+          <h2 id="access-permissions-title">{roleLabels[current.role]}</h2>
+          <p>Les actions disponibles pour votre compte sont listées ci-dessous.</p>
+        </div>
+        <ul>
+          {rolePermissions[current.role].map((permission) => <li key={permission}><i />{permission}</li>)}
+        </ul>
+      </section>
+
+      {canInviteMembers(current.role) ? <div className="access-columns">
         <section className="member-panel">
           <div className="panel-heading"><div><span className="card-label">Gestion des accès</span><h2>Membres INOX</h2></div><span className="member-count">{members.length}</span></div>
           {loading ? <p className="empty-state">Chargement des membres…</p> : null}
@@ -261,8 +302,7 @@ export default function TeamAccessWorkspace({ current, refreshKey = 0 }: { curre
           </div>
         </section>
 
-        {canInviteMembers(current.role) ? (
-          <section className="invite-panel">
+        <section className="invite-panel">
             <span className="card-label">Chaîne de confiance</span>
             <h2>Ajouter un membre</h2>
             <p>Créez un accès nominatif. Le nouveau membre choisit son mot de passe puis active lui-même son authentificateur.</p>
@@ -282,11 +322,8 @@ export default function TeamAccessWorkspace({ current, refreshKey = 0 }: { curre
                 <small>Le lien n’est pas enregistré en clair. S’il est perdu ou expiré, utilisez « Renouveler le lien » sur le membre en attente.</small>
               </div>
             ) : null}
-          </section>
-        ) : (
-          <section className="invite-panel"><span className="card-label">Droits</span><h2>Ajout réservé</h2><p>Seuls le propriétaire et les administrateurs peuvent inviter un nouveau membre.</p></section>
-        )}
-      </div>
+        </section>
+      </div> : null}
 
       {memberAction ? (
         <div className="member-dialog-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) closeMemberAction(); }}>

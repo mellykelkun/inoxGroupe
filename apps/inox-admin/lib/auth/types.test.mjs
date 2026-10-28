@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { canInviteMembers, canManageEditorial, canManageMember, canModerateForum, canReissueAdminInvitation } from "./types.ts";
+import { canAccessAdminWorkspace, canInviteMembers, canManageContacts, canManageEditorial, canManageMember, canModerateForum, canReissueAdminInvitation, canUseAdminAssistant, canViewAdminOverview } from "./types.ts";
 
 test("seuls le propriétaire et l’administrateur peuvent inviter des membres", () => {
   assert.equal(canInviteMembers("owner"), true);
@@ -17,6 +17,22 @@ test("les permissions métier restent séparées par rôle", () => {
   assert.equal(canManageEditorial("moderator"), false);
   assert.equal(canModerateForum("viewer"), false);
   assert.equal(canManageEditorial("viewer"), false);
+  assert.equal(canManageContacts("administrator"), true);
+  assert.equal(canManageContacts("moderator"), false);
+  assert.equal(canUseAdminAssistant("owner"), true);
+  assert.equal(canUseAdminAssistant("editor"), false);
+  assert.equal(canViewAdminOverview("administrator"), true);
+  assert.equal(canViewAdminOverview("viewer"), false);
+});
+
+test("chaque rôle ne reçoit que les espaces autorisés", () => {
+  assert.equal(canAccessAdminWorkspace("moderator", "forum"), true);
+  assert.equal(canAccessAdminWorkspace("moderator", "journal"), false);
+  assert.equal(canAccessAdminWorkspace("editor", "journal"), true);
+  assert.equal(canAccessAdminWorkspace("editor", "contacts"), false);
+  assert.equal(canAccessAdminWorkspace("viewer", "presence"), true);
+  assert.equal(canAccessAdminWorkspace("viewer", "team"), true);
+  assert.equal(canAccessAdminWorkspace("viewer", "overview"), false);
 });
 
 test("la gestion des membres respecte la hiérarchie et protège le propriétaire", () => {
