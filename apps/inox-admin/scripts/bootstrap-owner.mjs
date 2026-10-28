@@ -34,12 +34,11 @@ const { data, error } = await supabase.auth.admin.generateLink({
   type: "invite",
   email,
   options: {
-    redirectTo: `${new URL(adminUrl).origin}/auth/callback`,
     data: { display_name: name },
   },
 });
 
-if (error || !data.user || !data.properties?.action_link) {
+if (error || !data.user || !data.properties?.hashed_token || data.properties.verification_type !== "invite") {
   console.error(error?.message ?? "Impossible de créer le propriétaire.");
   process.exit(1);
 }
@@ -60,5 +59,7 @@ if (updateError) {
 
 console.log("Propriétaire initial créé :", data.user.id);
 console.log("Ouvrez ce lien une seule fois pour créer le mot de passe et le TOTP :");
-console.log(data.properties.action_link);
-
+const invitationUrl = new URL("/auth/callback", new URL(adminUrl).origin);
+invitationUrl.searchParams.set("token_hash", data.properties.hashed_token);
+invitationUrl.searchParams.set("type", "invite");
+console.log(invitationUrl.toString());

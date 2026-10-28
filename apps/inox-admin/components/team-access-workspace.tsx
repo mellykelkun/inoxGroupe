@@ -87,8 +87,12 @@ export default function TeamAccessWorkspace({ current, refreshKey = 0 }: { curre
 
   async function copyInvitation() {
     if (!invitation) return;
-    await navigator.clipboard.writeText(invitation.invitationUrl);
-    setMessage("Lien d’invitation copié. Transmettez-le uniquement au membre concerné.");
+    try {
+      await navigator.clipboard.writeText(invitation.invitationUrl);
+      setMessage("Lien d’invitation copié. Transmettez-le uniquement au membre concerné.");
+    } catch {
+      setMessage("Le lien n’a pas pu être copié. Utilisez le QR d’invitation ou réessayez depuis un navigateur autorisant le presse-papiers.");
+    }
   }
 
   return (

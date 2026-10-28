@@ -15,6 +15,7 @@
         "AI_SESSION_SECRET",
         "FORUM_HASH_SECRET",
         "CONTACT_HASH_SECRET",
+        "ADMIN_URL",
         "NEXT_PUBLIC_ADMIN_URL",
         "inoxstorage_SUPABASE_URL",
         "inoxstorage_SUPABASE_PUBLISHABLE_KEY",

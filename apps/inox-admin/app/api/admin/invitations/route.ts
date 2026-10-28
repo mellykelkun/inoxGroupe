@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { authenticateAdmin } from "@/lib/auth/server";
+import { buildAdminInvitationUrl, resolveAdminOrigin } from "@/lib/auth/invitation-links";
 import { canInviteMembers, isAdminRole } from "@/lib/auth/types";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -21,7 +22,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
-  const input = body as Record<string, unknown>;
+  const input = body && typeof body === "object" ? body as Record<string, unknown> : {};
   const email = typeof input.email === "string" ? input.email.trim().toLowerCase() : "";
   const displayName = typeof input.displayName === "string" ? input.displayName.trim() : "";
   const role = input.role;
@@ -33,19 +34,29 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "owner_required" }, { status: 403 });
   }
 
-  const configuredOrigin = process.env.NEXT_PUBLIC_ADMIN_URL?.trim();
-  const origin = configuredOrigin ? new URL(configuredOrigin).origin : request.nextUrl.origin;
+  let origin: string;
+  try {
+    origin = resolveAdminOrigin({
+      requestOrigin: request.nextUrl.origin,
+      configuredOrigin: process.env.ADMIN_URL || process.env.NEXT_PUBLIC_ADMIN_URL,
+      vercelProductionUrl: process.env.VERCEL_PROJECT_PRODUCTION_URL,
+      vercelDeploymentUrl: process.env.VERCEL_URL,
+      production: process.env.NODE_ENV === "production",
+    });
+  } catch {
+    return NextResponse.json({ error: "admin_origin_missing" }, { status: 503 });
+  }
+
   const admin = createAdminClient();
   const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
     type: "invite",
     email,
     options: {
-      redirectTo: `${origin}/auth/callback`,
       data: { display_name: displayName },
     },
   });
 
-  if (linkError || !linkData.properties?.action_link || !linkData.user) {
+  if (linkError || !linkData.properties?.hashed_token || linkData.properties.verification_type !== "invite" || !linkData.user) {
     const message = linkError?.message.toLowerCase() ?? "";
     const error = message.includes("registered") || message.includes("exists")
       ? "member_already_exists"
@@ -64,12 +75,15 @@ export async function POST(request: NextRequest) {
   });
 
   if (updateError) {
+    await admin.auth.admin.deleteUser(linkData.user.id);
     return NextResponse.json({ error: "member_profile_failed" }, { status: 500 });
   }
 
+  const invitationUrl = buildAdminInvitationUrl(origin, linkData.properties.hashed_token);
+
   return NextResponse.json(
     {
-      invitationUrl: linkData.properties.action_link,
+      invitationUrl,
       member: { userId: linkData.user.id, email, displayName, role },
     },
     {
@@ -78,4 +92,3 @@ export async function POST(request: NextRequest) {
     },
   );
 }
-

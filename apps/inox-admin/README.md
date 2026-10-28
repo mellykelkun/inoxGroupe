@@ -8,6 +8,12 @@ npm run dev --workspace=@inox/inox-admin
 
 L’application écoute volontairement sur `http://localhost:3002`.
 
+En production, `ADMIN_URL` doit contenir l’origine HTTPS publique du panel
+(par exemple `https://inox-admin.vercel.app`). Les QR d’invitation sont générés
+sur cette origine et le callback vérifie directement le jeton à usage unique ;
+ils ne dépendent donc pas de l’URL de site Supabase, souvent configurée sur
+`localhost` pour le développement.
+
 L’interface utilise la base Supabase partagée. Elle reçoit les demandes du site principal, modère le forum public et protège chaque session par une identité nominative et un second facteur TOTP.
 # INOX Admin
 

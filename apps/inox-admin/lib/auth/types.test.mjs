@@ -1,0 +1,20 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { canInviteMembers, canManageEditorial, canModerateForum } from "./types.ts";
+
+test("seuls le propriétaire et l’administrateur peuvent inviter des membres", () => {
+  assert.equal(canInviteMembers("owner"), true);
+  assert.equal(canInviteMembers("administrator"), true);
+  assert.equal(canInviteMembers("moderator"), false);
+  assert.equal(canInviteMembers("editor"), false);
+  assert.equal(canInviteMembers("viewer"), false);
+});
+
+test("les permissions métier restent séparées par rôle", () => {
+  assert.equal(canModerateForum("moderator"), true);
+  assert.equal(canModerateForum("editor"), false);
+  assert.equal(canManageEditorial("editor"), true);
+  assert.equal(canManageEditorial("moderator"), false);
+  assert.equal(canModerateForum("viewer"), false);
+  assert.equal(canManageEditorial("viewer"), false);
+});

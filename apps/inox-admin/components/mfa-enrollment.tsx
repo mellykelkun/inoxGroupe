@@ -36,10 +36,28 @@ export default function MfaEnrollment({
 
     setPending(true);
     try {
-      const supabase = await createClient();
       if (!passwordReady) {
-        const { error: passwordError } = await supabase.auth.updateUser({ password });
-        if (passwordError) throw passwordError;
+        const response = await fetch("/api/auth/activation/password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password }),
+        });
+        if (!response.ok) {
+          const result = await response.json().catch(() => ({})) as { error?: string };
+          if (result.error === "invalid_password" || result.error === "password_update_failed") {
+            throw new Error("PASSWORD_REJECTED");
+          }
+          throw new Error("ACTIVATION_DENIED");
+        }
+      }
+
+      const supabase = await createClient();
+      const { data: factors, error: factorError } = await supabase.auth.mfa.listFactors();
+      if (factorError) throw factorError;
+      for (const factor of factors.all) {
+        if (factor.factor_type !== "totp" || factor.status !== "unverified") continue;
+        const { error: cleanupError } = await supabase.auth.mfa.unenroll({ factorId: factor.id });
+        if (cleanupError) throw cleanupError;
       }
 
       const { data, error: enrollError } = await supabase.auth.mfa.enroll({
@@ -55,8 +73,12 @@ export default function MfaEnrollment({
       });
       setPassword("");
       setConfirmPassword("");
-    } catch {
-      setError("L’activation n’a pas pu démarrer. Rechargez l’invitation ou contactez l’administrateur.");
+    } catch (caughtError) {
+      setError(
+        caughtError instanceof Error && caughtError.message === "PASSWORD_REJECTED"
+          ? "Ce mot de passe ne respecte pas la politique de sécurité. Choisissez-en un autre d’au moins 12 caractères."
+          : "L’activation n’a pas pu démarrer. Rechargez l’invitation ou contactez l’administrateur.",
+      );
     } finally {
       setPending(false);
     }
