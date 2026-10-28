@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { canInviteMembers, canManageEditorial, canModerateForum, canReissueAdminInvitation } from "./types.ts";
+import { canInviteMembers, canManageEditorial, canManageMember, canModerateForum, canReissueAdminInvitation } from "./types.ts";
 
 test("seuls le propriétaire et l’administrateur peuvent inviter des membres", () => {
   assert.equal(canInviteMembers("owner"), true);
@@ -17,6 +17,17 @@ test("les permissions métier restent séparées par rôle", () => {
   assert.equal(canManageEditorial("moderator"), false);
   assert.equal(canModerateForum("viewer"), false);
   assert.equal(canManageEditorial("viewer"), false);
+});
+
+test("la gestion des membres respecte la hiérarchie et protège le propriétaire", () => {
+  assert.equal(canManageMember("owner", "administrator"), true);
+  assert.equal(canManageMember("owner", "viewer"), true);
+  assert.equal(canManageMember("owner", "owner"), false);
+  assert.equal(canManageMember("administrator", "moderator"), true);
+  assert.equal(canManageMember("administrator", "editor"), true);
+  assert.equal(canManageMember("administrator", "viewer"), true);
+  assert.equal(canManageMember("administrator", "administrator"), false);
+  assert.equal(canManageMember("moderator", "viewer"), false);
 });
 
 test("une invitation ne peut être réémise que pour le même rôle sans facteur vérifié", () => {

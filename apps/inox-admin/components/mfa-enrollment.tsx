@@ -109,10 +109,20 @@ export default function MfaEnrollment({
         code,
       });
       if (verifyError) throw verifyError;
+      const completionResponse = await fetch("/api/auth/activation/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+      });
+      if (!completionResponse.ok) throw new Error("ACTIVATION_COMPLETION_FAILED");
       router.replace("/");
       router.refresh();
-    } catch {
-      setError("Code incorrect. Vérifiez l’heure du téléphone puis saisissez le nouveau code affiché.");
+    } catch (caughtError) {
+      if (caughtError instanceof Error && caughtError.message === "ACTIVATION_COMPLETION_FAILED") {
+        setError("Le 2FA est vérifié, mais l’intégration du membre n’a pas pu être finalisée. Rechargez la page pour réessayer.");
+      } else {
+        setError("Code incorrect. Vérifiez l’heure du téléphone puis saisissez le nouveau code affiché.");
+      }
     } finally {
       setPending(false);
     }

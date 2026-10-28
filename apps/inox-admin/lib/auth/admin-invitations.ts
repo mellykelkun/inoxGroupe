@@ -9,6 +9,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export type AdminInvitationFailure =
   | "invalid_admin_email"
   | "member_already_exists"
+  | "member_not_found"
   | "invitation_failed"
   | "member_profile_failed";
 
@@ -35,6 +36,52 @@ async function findUserByEmail(email: string) {
   return null;
 }
 
+function invitationMetadata(user: User, invitedBy: string) {
+  const currentGeneration = Number(user.app_metadata.inox_admin_invitation_generation);
+  return {
+    inox_admin_invited_by: user.app_metadata.inox_admin_invited_by || invitedBy,
+    inox_admin_invitation_issued_at: new Date().toISOString(),
+    inox_admin_invitation_generation:
+      Number.isSafeInteger(currentGeneration) && currentGeneration > 0
+        ? currentGeneration + 1
+        : 1,
+  };
+}
+
+async function generatePendingMemberLink(user: User) {
+  const email = normalizeAdminEmail(user.email);
+  if (!isAdminEmail(email)) throw new AdminInvitationError("invalid_admin_email");
+
+  const admin = createAdminClient();
+  const { data: factorData, error: factorError } =
+    await admin.auth.admin.mfa.listFactors({ userId: user.id });
+  if (factorError) throw new AdminInvitationError("invitation_failed");
+
+  const role = user.app_metadata.inox_admin_role;
+  if (
+    user.app_metadata.inox_admin_active !== true ||
+    !canReissueAdminInvitation({
+      active: true,
+      existingRole: role,
+      requestedRole: role as AdminRole,
+      hasVerifiedFactor: factorData.factors.some((factor) => factor.status === "verified"),
+    })
+  ) {
+    throw new AdminInvitationError("member_already_exists");
+  }
+
+  const { data, error } = await admin.auth.admin.generateLink({ type: "recovery", email });
+  if (
+    error ||
+    !data.user ||
+    !data.properties?.hashed_token ||
+    data.properties.verification_type !== "recovery"
+  ) {
+    throw new AdminInvitationError("invitation_failed");
+  }
+  return data.properties;
+}
+
 async function reissuePendingInvitation(
   email: string,
   displayName: string,
@@ -48,30 +95,10 @@ async function reissuePendingInvitation(
     throw new AdminInvitationError("member_already_exists");
   }
 
-  const { data: factorData, error: factorError } =
-    await admin.auth.admin.mfa.listFactors({ userId: existingUser.id });
-  if (factorError) throw new AdminInvitationError("invitation_failed");
-  if (!canReissueAdminInvitation({
-    active: existingUser.app_metadata.inox_admin_active === true,
-    existingRole,
-    requestedRole: role,
-    hasVerifiedFactor: factorData.factors.some((factor) => factor.status === "verified"),
-  })) {
+  if (existingRole !== role) {
     throw new AdminInvitationError("member_already_exists");
   }
-
-  const { data: recoveryData, error: recoveryError } = await admin.auth.admin.generateLink({
-    type: "recovery",
-    email,
-  });
-  if (
-    recoveryError ||
-    !recoveryData.user ||
-    !recoveryData.properties?.hashed_token ||
-    recoveryData.properties.verification_type !== "recovery"
-  ) {
-    throw new AdminInvitationError("invitation_failed");
-  }
+  const properties = await generatePendingMemberLink(existingUser);
 
   const { data: updatedData, error: updateError } = await admin.auth.admin.updateUserById(
     existingUser.id,
@@ -79,8 +106,7 @@ async function reissuePendingInvitation(
       app_metadata: {
         ...existingUser.app_metadata,
         inox_admin_display_name: displayName,
-        inox_admin_invited_by:
-          existingUser.app_metadata.inox_admin_invited_by || invitedBy,
+        ...invitationMetadata(existingUser, invitedBy),
       },
     },
   );
@@ -90,7 +116,7 @@ async function reissuePendingInvitation(
 
   return {
     user: updatedData.user,
-    properties: recoveryData.properties,
+    properties,
     reissued: true,
   };
 }
@@ -151,7 +177,7 @@ export async function createAdminInvitation({
           inox_admin_active: true,
           inox_admin_role: role,
           inox_admin_display_name: displayName,
-          inox_admin_invited_by: invitedBy,
+          ...invitationMetadata(user, invitedBy),
         },
       },
     );
@@ -175,5 +201,49 @@ export async function createAdminInvitation({
     ),
     member: { userId: user.id, email, displayName, role },
     reissued,
+  };
+}
+
+export async function renewAdminInvitation({
+  userId,
+  invitedBy,
+  origin,
+}: {
+  userId: string;
+  invitedBy: string;
+  origin: string;
+}) {
+  const admin = createAdminClient();
+  const { data, error } = await admin.auth.admin.getUserById(userId);
+  if (error || !data.user) throw new AdminInvitationError("member_not_found");
+
+  const user = data.user;
+  const role = user.app_metadata.inox_admin_role;
+  if (!isAdminEmail(user.email) || !role || role === "owner") {
+    throw new AdminInvitationError("member_already_exists");
+  }
+
+  const properties = await generatePendingMemberLink(user);
+  const displayName =
+    typeof user.app_metadata.inox_admin_display_name === "string"
+      ? user.app_metadata.inox_admin_display_name.trim()
+      : user.email?.split("@")[0] ?? "Membre INOX";
+  const { data: updatedData, error: updateError } = await admin.auth.admin.updateUserById(
+    user.id,
+    {
+      app_metadata: {
+        ...user.app_metadata,
+        ...invitationMetadata(user, invitedBy),
+      },
+    },
+  );
+  if (updateError || !updatedData.user) {
+    throw new AdminInvitationError("member_profile_failed");
+  }
+
+  return {
+    invitationUrl: buildAdminInvitationUrl(origin, properties.hashed_token, "recovery"),
+    member: { userId: user.id, email: normalizeAdminEmail(user.email), displayName, role: role as AdminRole },
+    reissued: true,
   };
 }

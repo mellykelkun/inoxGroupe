@@ -22,6 +22,11 @@ export type AdminMemberSummary = {
   displayName: string;
   role: AdminRole;
   active: boolean;
+  status: "pending" | "active" | "blocked";
+  hasVerifiedMfa: boolean;
+  emailCompliant: boolean;
+  invitationIssuedAt: string | null;
+  invitationGeneration: number;
   createdAt: string;
   lastSignInAt: string | null;
 };
@@ -32,6 +37,13 @@ export function isAdminRole(value: unknown): value is AdminRole {
 
 export function canInviteMembers(role: AdminRole) {
   return role === "owner" || role === "administrator";
+}
+
+export function canManageMember(actorRole: AdminRole, targetRole: AdminRole) {
+  if (targetRole === "owner") return false;
+  if (actorRole === "owner") return true;
+  return actorRole === "administrator" &&
+    (targetRole === "moderator" || targetRole === "editor" || targetRole === "viewer");
 }
 
 export function canModerateForum(role: AdminRole) {

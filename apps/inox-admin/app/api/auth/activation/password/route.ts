@@ -1,30 +1,30 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateActivationPassword } from "@/lib/auth/activation-password";
+import { isAdminEmail } from "@/lib/auth/admin-email";
 import { isAdminRole } from "@/lib/auth/types";
+import { readLimitedJsonObject, validateMutationRequest } from "@/lib/http/request-security";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
-  const requestOrigin = request.headers.get("origin");
-  if (requestOrigin && requestOrigin !== request.nextUrl.origin) {
-    return NextResponse.json({ error: "invalid_origin" }, { status: 403 });
+  const requestFailure = validateMutationRequest(request, 2_000);
+  if (requestFailure) {
+    return NextResponse.json(
+      { error: requestFailure },
+      { status: requestFailure === "request_too_large" ? 413 : 403 },
+    );
   }
 
-  const size = Number(request.headers.get("content-length") || 0);
-  if (size > 2_000) {
-    return NextResponse.json({ error: "request_too_large" }, { status: 413 });
+  const parsedBody = await readLimitedJsonObject(request, 2_000);
+  if (!parsedBody.ok) {
+    return NextResponse.json(
+      { error: parsedBody.error },
+      { status: parsedBody.error === "request_too_large" ? 413 : 400 },
+    );
   }
-
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "invalid_json" }, { status: 400 });
-  }
-
-  const input = body && typeof body === "object" ? body as Record<string, unknown> : {};
+  const input = parsedBody.value;
   const password = typeof input.password === "string"
     ? input.password
     : "";
@@ -51,7 +51,8 @@ export async function POST(request: NextRequest) {
     userError ||
     !freshData.user ||
     metadata?.inox_admin_active !== true ||
-    !isAdminRole(metadata?.inox_admin_role)
+    !isAdminRole(metadata?.inox_admin_role) ||
+    !isAdminEmail(freshData.user.email)
   ) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }

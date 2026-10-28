@@ -2220,6 +2220,13 @@ a {
   border-top: 1px solid var(--line);
 }
 
+.member-details em {
+  color: #a74432;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+}
+
 .member-row > div:nth-child(2) {
   display: grid;
   gap: 3px;
@@ -2262,6 +2269,131 @@ a {
 .member-state .is-disabled i {
   background: #a3afba;
   box-shadow: 0 0 0 4px rgba(100, 117, 132, 0.1);
+}
+
+.member-status--pending i {
+  background: #d99328 !important;
+  box-shadow: 0 0 0 4px rgba(217, 147, 40, 0.13) !important;
+}
+
+.member-status--blocked i {
+  background: #b74a3b !important;
+  box-shadow: 0 0 0 4px rgba(183, 74, 59, 0.12) !important;
+}
+
+.member-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+  max-width: 310px;
+}
+
+.member-actions button,
+.member-dialog-actions button {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid #c7d8e5;
+  border-radius: 8px;
+  color: #28516f;
+  background: #f8fbfd;
+  font: 700 11px var(--font-sans), sans-serif;
+  cursor: pointer;
+}
+
+.member-actions button:disabled,
+.member-dialog-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.member-actions .member-action--danger,
+.member-dialog-actions .danger-action {
+  border-color: rgba(159, 43, 43, 0.25);
+  color: #9f2b2b;
+  background: #fff4f4;
+}
+
+.member-dialog-backdrop {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(4, 18, 32, 0.58);
+  backdrop-filter: blur(4px);
+}
+
+.member-dialog {
+  width: min(100%, 520px);
+  padding: 26px;
+  border: 1px solid rgba(196, 216, 230, 0.9);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 24px 70px rgba(4, 18, 32, 0.28);
+}
+
+.member-dialog h2 {
+  margin: 6px 0 10px;
+  color: var(--navy-900);
+  font-size: 22px;
+}
+
+.member-dialog > p {
+  margin: 0 0 20px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.member-dialog form,
+.member-dialog label {
+  display: grid;
+  gap: 10px;
+}
+
+.member-dialog label {
+  color: #385977;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.member-dialog input,
+.member-dialog textarea {
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 13px;
+  border: 1px solid #cbdce9;
+  border-radius: 10px;
+  color: var(--navy-900);
+  background: #fbfdff;
+  font: inherit;
+  outline: none;
+}
+
+.member-dialog textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.member-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.member-dialog-actions .auth-submit,
+.member-dialog-actions .danger-action {
+  min-height: 42px;
+  padding-inline: 16px;
+}
+
+.member-dialog-actions .auth-submit {
+  border-color: var(--blue);
+  color: #fff;
+  background: var(--blue);
 }
 
 .invite-form {
@@ -2401,6 +2533,27 @@ a {
   .access-identity dl > div {
     grid-template-columns: 1fr;
     gap: 3px;
+  }
+
+  .member-row {
+    grid-template-columns: 38px minmax(0, 1fr);
+    align-items: start;
+    padding: 15px 0;
+  }
+
+  .member-state {
+    grid-column: 2;
+    justify-items: start;
+  }
+
+  .member-actions {
+    justify-content: flex-start;
+    max-width: none;
+  }
+
+  .member-dialog-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
   }
   .topbar {
     gap: 10px;
