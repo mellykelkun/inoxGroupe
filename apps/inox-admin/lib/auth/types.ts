@@ -41,3 +41,21 @@ export function canModerateForum(role: AdminRole) {
 export function canManageEditorial(role: AdminRole) {
   return role === "owner" || role === "administrator" || role === "editor";
 }
+
+export function canReissueAdminInvitation({
+  active,
+  existingRole,
+  requestedRole,
+  hasVerifiedFactor,
+}: {
+  active: boolean;
+  existingRole: unknown;
+  requestedRole: AdminRole;
+  hasVerifiedFactor: boolean;
+}) {
+  return active &&
+    isAdminRole(existingRole) &&
+    existingRole !== "owner" &&
+    existingRole === requestedRole &&
+    !hasVerifiedFactor;
+}

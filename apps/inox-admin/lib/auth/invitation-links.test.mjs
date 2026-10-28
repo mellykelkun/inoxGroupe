@@ -40,3 +40,11 @@ test("une origine locale est refusée en production", () => {
     /ADMIN_PUBLIC_ORIGIN_MISSING/,
   );
 });
+
+test("une réémission pour un compte en attente utilise un jeton de récupération", () => {
+  const invitation = new URL(
+    buildAdminInvitationUrl("https://inox-admin.vercel.app", "nouveau-jeton", "recovery"),
+  );
+  assert.equal(invitation.searchParams.get("type"), "recovery");
+  assert.equal(invitation.searchParams.get("token_hash"), "nouveau-jeton");
+});

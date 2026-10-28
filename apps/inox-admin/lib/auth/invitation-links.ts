@@ -53,13 +53,17 @@ export function resolveAdminOrigin({
   throw new Error("ADMIN_PUBLIC_ORIGIN_MISSING");
 }
 
-export function buildAdminInvitationUrl(origin: string, hashedToken: string) {
+export function buildAdminInvitationUrl(
+  origin: string,
+  hashedToken: string,
+  type: "invite" | "recovery" = "invite",
+) {
   if (!hashedToken || hashedToken.length > 4096) {
     throw new Error("ADMIN_INVITATION_TOKEN_INVALID");
   }
 
   const invitationUrl = new URL("/auth/callback", origin);
   invitationUrl.searchParams.set("token_hash", hashedToken);
-  invitationUrl.searchParams.set("type", "invite");
+  invitationUrl.searchParams.set("type", type);
   return invitationUrl.toString();
 }

@@ -20,9 +20,9 @@ export async function GET(request: NextRequest) {
   errorUrl.search = "";
   errorUrl.searchParams.set("erreur", "invitation");
 
-  if (tokenHash && type === "invite") {
+  if (tokenHash && (type === "invite" || type === "recovery")) {
     const supabase = await createClient();
-    const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: "invite" });
+    const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
     return redirectWithoutToken(error ? errorUrl : successUrl);
   }
 

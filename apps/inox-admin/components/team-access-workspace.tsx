@@ -16,6 +16,7 @@ const roleLabels: Record<AdminRole, string> = {
 type Invitation = {
   invitationUrl: string;
   member: { userId: string; email: string; displayName: string; role: AdminRole };
+  reissued: boolean;
 };
 
 export default function TeamAccessWorkspace({ current, refreshKey = 0 }: { current: AdminIdentity; refreshKey?: number }) {
@@ -141,7 +142,7 @@ export default function TeamAccessWorkspace({ current, refreshKey = 0 }: { curre
             {invitation ? (
               <div className="invitation-result">
                 <div className="invitation-qr"><QRCodeSVG value={invitation.invitationUrl} size={210} level="M" marginSize={2} /></div>
-                <h3>Invitation prête pour {invitation.member.displayName}</h3>
+                <h3>{invitation.reissued ? "Invitation renouvelée" : "Invitation prête"} pour {invitation.member.displayName}</h3>
                 <p>Le membre scanne ce QR, crée son mot de passe, puis reçoit son propre QR 2FA sur son appareil.</p>
                 <button className="secondary-action" type="button" onClick={copyInvitation}>Copier le lien sécurisé</button>
                 <small>Ce QR est un moyen de transport de l’invitation. Il ne contient jamais le secret TOTP.</small>

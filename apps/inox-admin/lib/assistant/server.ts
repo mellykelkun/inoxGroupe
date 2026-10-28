@@ -3,7 +3,8 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { Groq } from "groq-sdk";
 import type { NextRequest } from "next/server";
-import { buildAdminInvitationUrl, resolveAdminOrigin } from "@/lib/auth/invitation-links";
+import { createAdminInvitation } from "@/lib/auth/admin-invitations";
+import { resolveAdminOrigin } from "@/lib/auth/invitation-links";
 import { canInviteMembers, canManageEditorial, canModerateForum, isAdminRole, type AdminIdentity } from "@/lib/auth/types";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { pageCatalog } from "../../../../packages/assistant-links";
@@ -374,12 +375,9 @@ export async function executePendingAction(conversationId: string, token: string
     const role = pending.args?.role;
     if (!isAdminRole(role) || role === "owner" || (auth.role !== "owner" && role === "administrator")) throw new Error("ASSISTANT_ROLE_FORBIDDEN");
     const origin = resolveAdminOrigin({ requestOrigin: request.nextUrl.origin, configuredOrigin: process.env.ADMIN_URL || process.env.NEXT_PUBLIC_ADMIN_URL, vercelProductionUrl: process.env.VERCEL_PROJECT_PRODUCTION_URL, vercelDeploymentUrl: process.env.VERCEL_URL, production: process.env.NODE_ENV === "production" });
-    const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({ type: "invite", email, options: { data: { display_name: displayName } } });
-    if (linkError || !linkData.properties?.hashed_token || linkData.properties.verification_type !== "invite" || !linkData.user) throw new Error("ASSISTANT_INVITE_FAILED");
-    const { error: updateError } = await admin.auth.admin.updateUserById(linkData.user.id, { app_metadata: { ...linkData.user.app_metadata, inox_admin_active: true, inox_admin_role: role, inox_admin_display_name: displayName, inox_admin_invited_by: auth.userId } });
-    if (updateError) { await admin.auth.admin.deleteUser(linkData.user.id); throw new Error("ASSISTANT_INVITE_FAILED"); }
-    await admin.from("audit_logs").insert({ admin_user_id: auth.userId, action: "assistant_member_invited", entity_type: "admin_member", entity_id: linkData.user.id, metadata: { email, role, conversation_id: conversationId, source: "admin_assistant" } });
-    return { message: `L’invitation de ${displayName} est prête.`, invitationUrl: buildAdminInvitationUrl(origin, linkData.properties.hashed_token), action: pending.action };
+    const invitation = await createAdminInvitation({ email, displayName, role, invitedBy: auth.userId, origin }).catch(() => { throw new Error("ASSISTANT_INVITE_FAILED"); });
+    await admin.from("audit_logs").insert({ admin_user_id: auth.userId, action: invitation.reissued ? "assistant_member_reinvited" : "assistant_member_invited", entity_type: "admin_member", entity_id: invitation.member.userId, metadata: { email, role, conversation_id: conversationId, source: "admin_assistant" } });
+    return { message: `L’invitation de ${displayName} est ${invitation.reissued ? "renouvelée" : "prête"}.`, invitationUrl: invitation.invitationUrl, action: pending.action };
   }
 
   if (pending.action === "publish_forum_message") {

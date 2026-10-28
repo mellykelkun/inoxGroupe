@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { AdminInvitationError, createAdminInvitation } from "@/lib/auth/admin-invitations";
 import { authenticateAdmin } from "@/lib/auth/server";
-import { buildAdminInvitationUrl, resolveAdminOrigin } from "@/lib/auth/invitation-links";
+import { resolveAdminOrigin } from "@/lib/auth/invitation-links";
 import { canInviteMembers, isAdminRole } from "@/lib/auth/types";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -47,45 +47,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "admin_origin_missing" }, { status: 503 });
   }
 
-  const admin = createAdminClient();
-  const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
-    type: "invite",
-    email,
-    options: {
-      data: { display_name: displayName },
-    },
-  });
-
-  if (linkError || !linkData.properties?.hashed_token || linkData.properties.verification_type !== "invite" || !linkData.user) {
-    const message = linkError?.message.toLowerCase() ?? "";
-    const error = message.includes("registered") || message.includes("exists")
-      ? "member_already_exists"
-      : "invitation_failed";
-    return NextResponse.json({ error }, { status: error === "member_already_exists" ? 409 : 500 });
+  let invitation;
+  try {
+    invitation = await createAdminInvitation({
+      email,
+      displayName,
+      role,
+      invitedBy: auth.identity.userId,
+      origin,
+    });
+  } catch (error) {
+    const reason = error instanceof AdminInvitationError ? error.reason : "invitation_failed";
+    return NextResponse.json(
+      { error: reason },
+      { status: reason === "member_already_exists" ? 409 : 500 },
+    );
   }
-
-  const { error: updateError } = await admin.auth.admin.updateUserById(linkData.user.id, {
-    app_metadata: {
-      ...linkData.user.app_metadata,
-      inox_admin_active: true,
-      inox_admin_role: role,
-      inox_admin_display_name: displayName,
-      inox_admin_invited_by: auth.identity.userId,
-    },
-  });
-
-  if (updateError) {
-    await admin.auth.admin.deleteUser(linkData.user.id);
-    return NextResponse.json({ error: "member_profile_failed" }, { status: 500 });
-  }
-
-  const invitationUrl = buildAdminInvitationUrl(origin, linkData.properties.hashed_token);
 
   return NextResponse.json(
-    {
-      invitationUrl,
-      member: { userId: linkData.user.id, email, displayName, role },
-    },
+    invitation,
     {
       status: 201,
       headers: { "Cache-Control": "private, no-store, max-age=0" },
