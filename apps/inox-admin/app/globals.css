@@ -42,10 +42,12 @@
 
 html {
   background: var(--paper);
+  overflow-x: clip;
 }
 
 body {
   margin: 0;
+  overflow-x: clip;
   color: var(--ink);
   background: var(--paper);
   font-family: var(--font-manrope), Arial, sans-serif;
@@ -80,6 +82,7 @@ a {
 
 .admin-shell {
   min-height: 100vh;
+  overflow-x: clip;
 }
 
 .sidebar {
@@ -95,6 +98,11 @@ a {
   background: #082943;
   box-shadow: 10px 0 28px rgba(6, 26, 45, 0.07);
   transition: width 0.24s ease;
+  scrollbar-width: none;
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none;
 }
 
 .sidebar::before {
@@ -327,6 +335,7 @@ a {
 
 .main-area {
   min-height: 100vh;
+  min-width: 0;
   margin-left: 268px;
   transition: margin-left 0.24s ease;
 }
@@ -596,6 +605,7 @@ a {
 
 .content-wrap {
   width: min(1480px, calc(100% - 68px));
+  min-width: 0;
   margin: 0 auto;
   padding: 38px 0 70px;
 }
@@ -2347,6 +2357,8 @@ a {
 }
 
 .access-matrix {
+  min-width: 0;
+  max-width: 100%;
   padding: 24px;
   border: 1px solid var(--line);
   border-radius: 15px;
@@ -2402,8 +2414,11 @@ a {
 }
 
 .access-matrix__scroll {
+  width: 100%;
+  max-width: 100%;
   max-height: min(58vh, 560px);
-  overflow: auto;
+  overflow-x: auto;
+  overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable both-edges;
   touch-action: pan-x pan-y;
