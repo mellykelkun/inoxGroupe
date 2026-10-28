@@ -309,6 +309,7 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
   const [activeSection, setActiveSection] = useState<SectionId>(() => firstAccessibleSection(currentMember.role));
   const [query, setQuery] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [overviewStats, setOverviewStats] = useState<OverviewStats | null>(null);
   const [notificationCounts, setNotificationCounts] = useState<NotificationCounts>({ contacts: 0, forum: 0 });
   const [overviewLoading, setOverviewLoading] = useState(true);
@@ -486,7 +487,7 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
   }
 
   return (
-    <div className="admin-shell">
+    <div className={`admin-shell ${sidebarCollapsed ? "admin-shell--sidebar-collapsed" : ""}`}>
       <aside className={`sidebar ${menuOpen ? "sidebar--open" : ""}`}>
         <div className="sidebar-brand">
           <BrandMark />
@@ -495,7 +496,7 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
         </div>
 
         <div className="workspace-label"><span>Espace</span><strong>INOX Technologies</strong></div>
-        <nav className="side-nav" aria-label="Navigation de l’administration">
+        <nav id="admin-navigation" className="side-nav" aria-label="Navigation de l’administration">
           {permittedNavigation.map((item) => {
             const count = item.id === "contacts"
               ? notificationCounts.contacts
@@ -507,11 +508,12 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
               type="button"
               className={activeSection === item.id ? "is-active" : ""}
               aria-current={activeSection === item.id ? "page" : undefined}
+              title={sidebarCollapsed ? item.label : undefined}
               onClick={() => navigate(item.id)}
               key={item.id}
             >
               <Icon name={item.icon} />
-              <span>{item.label}</span>
+              <span className="side-nav__label">{item.label}</span>
               {typeof count === "number" && count > 0 ? (
                 <span
                   className="nav-badge"
@@ -536,6 +538,16 @@ export default function AdminDashboard({ currentMember }: { currentMember: Admin
       <main className="main-area">
         <header className="topbar">
           <button className="menu-button" type="button" aria-label="Ouvrir le menu" onClick={() => setMenuOpen(true)}><Icon name="menu" /></button>
+          <button
+            className={`sidebar-toggle ${sidebarCollapsed ? "is-collapsed" : ""}`}
+            type="button"
+            aria-controls="admin-navigation"
+            aria-expanded={!sidebarCollapsed}
+            aria-label={sidebarCollapsed ? "Déplier la navigation" : "Replier la navigation"}
+            onClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
+          >
+            <Icon name="arrow" />
+          </button>
           <label className="search-box">
             <Icon name="search" />
             <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={searchHint} aria-label={searchHint} />

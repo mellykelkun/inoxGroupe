@@ -73,6 +73,7 @@ a {
   color: #dbeafa;
   background: #082943;
   box-shadow: 10px 0 28px rgba(6, 26, 45, 0.07);
+  transition: width 0.24s ease;
 }
 
 .sidebar::before {
@@ -306,6 +307,7 @@ a {
 .main-area {
   min-height: 100vh;
   margin-left: 268px;
+  transition: margin-left 0.24s ease;
 }
 
 .topbar {
@@ -330,6 +332,87 @@ a {
   border: 1px solid var(--line);
   border-radius: 10px;
   background: #fff;
+}
+
+.sidebar-toggle {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: #31556f;
+  background: #fff;
+  cursor: pointer;
+}
+
+.sidebar-toggle svg {
+  transition: transform 0.2s ease;
+}
+
+.sidebar-toggle:not(.is-collapsed) svg {
+  transform: rotate(180deg);
+}
+
+.admin-shell--sidebar-collapsed .sidebar {
+  width: 76px;
+}
+
+.admin-shell--sidebar-collapsed .main-area {
+  margin-left: 76px;
+}
+
+.admin-shell--sidebar-collapsed .sidebar-brand {
+  justify-content: center;
+  padding-inline: 16px;
+}
+
+.admin-shell--sidebar-collapsed .sidebar-brand > div:nth-child(2),
+.admin-shell--sidebar-collapsed .workspace-label,
+.admin-shell--sidebar-collapsed .system-state,
+.admin-shell--sidebar-collapsed .profile-card > div:nth-child(2) {
+  display: none;
+}
+
+.admin-shell--sidebar-collapsed .side-nav {
+  padding-inline: 12px;
+}
+
+.admin-shell--sidebar-collapsed .side-nav button {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  padding-inline: 0;
+}
+
+.admin-shell--sidebar-collapsed .side-nav button:hover {
+  transform: none;
+}
+
+.admin-shell--sidebar-collapsed .side-nav__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.admin-shell--sidebar-collapsed .side-nav .nav-badge {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+}
+
+.admin-shell--sidebar-collapsed .sidebar-foot {
+  padding-inline: 12px;
+}
+
+.admin-shell--sidebar-collapsed .profile-card {
+  grid-template-columns: 1fr auto;
+  justify-items: center;
+  gap: 4px;
+  padding: 8px;
 }
 
 .search-box {
@@ -2299,7 +2382,10 @@ a {
 }
 
 .access-matrix__scroll {
-  overflow-x: auto;
+  max-height: min(58vh, 560px);
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable both-edges;
   border: 1px solid #dce8f0;
   border-radius: 11px;
 }
@@ -2322,10 +2408,14 @@ a {
 }
 
 .access-matrix thead th {
+  position: sticky;
+  z-index: 1;
+  top: 0;
   color: #31556f;
   background: #f3f8fb;
   font-size: 11px;
   white-space: nowrap;
+  box-shadow: inset 0 -1px 0 #dce8f0;
 }
 
 .access-matrix tbody tr:last-child th,
@@ -2637,6 +2727,60 @@ a {
 }
 
 @media (max-width: 900px) {
+  .admin-shell--sidebar-collapsed .sidebar {
+    width: 268px;
+  }
+
+  .admin-shell--sidebar-collapsed .main-area {
+    margin-left: 0;
+  }
+
+  .admin-shell--sidebar-collapsed .sidebar-brand {
+    justify-content: flex-start;
+    padding-inline: 25px;
+  }
+
+  .admin-shell--sidebar-collapsed .sidebar-brand > div:nth-child(2),
+  .admin-shell--sidebar-collapsed .workspace-label,
+  .admin-shell--sidebar-collapsed .system-state,
+  .admin-shell--sidebar-collapsed .profile-card > div:nth-child(2) {
+    display: grid;
+  }
+
+  .admin-shell--sidebar-collapsed .side-nav {
+    padding-inline: 16px;
+  }
+
+  .admin-shell--sidebar-collapsed .side-nav button {
+    grid-template-columns: 22px 1fr auto;
+    justify-items: stretch;
+    padding-inline: 13px;
+  }
+
+  .admin-shell--sidebar-collapsed .side-nav__label {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  .admin-shell--sidebar-collapsed .side-nav .nav-badge {
+    position: static;
+  }
+
+  .admin-shell--sidebar-collapsed .sidebar-foot {
+    padding-inline: 16px;
+  }
+
+  .admin-shell--sidebar-collapsed .profile-card {
+    grid-template-columns: 38px 1fr auto;
+    justify-items: stretch;
+    gap: 10px;
+    padding: 10px;
+  }
+
   .sidebar {
     visibility: hidden;
     pointer-events: none;
@@ -2653,6 +2797,10 @@ a {
   .sidebar-close,
   .menu-button {
     display: grid;
+  }
+
+  .sidebar-toggle {
+    display: none;
   }
 
   .sidebar-backdrop {

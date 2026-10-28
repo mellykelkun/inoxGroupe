@@ -312,7 +312,12 @@ export default function TeamAccessWorkspace({ current, refreshKey = 0 }: { curre
           {accessMatrixLoading ? <p className="empty-state">Vérification de la matrice d’accès…</p> : null}
           {accessMatrixUnavailable ? <p className="access-matrix__error" role="alert">La matrice n’est pas disponible pour le moment. Actualisez la page pour réessayer.</p> : null}
           {accessMatrix ? (
-            <div className="access-matrix__scroll" tabIndex={0} aria-label="Tableau des autorisations par rôle">
+            <div
+              className="access-matrix__scroll"
+              tabIndex={0}
+              role="region"
+              aria-label="Tableau des autorisations par rôle. Défilement horizontal et vertical disponible."
+            >
               <table>
                 <thead>
                   <tr>
